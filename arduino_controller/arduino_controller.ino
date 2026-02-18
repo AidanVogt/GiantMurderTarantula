@@ -24,7 +24,7 @@ struct LED_QUAD {
 
 // other globals
 const float max_potent_val = 1024;
-const float hw_offset = 0.1;
+const float fudge_fct = 0.1;
 const float center = 512;
 
 // helper for byte conversion
@@ -58,7 +58,7 @@ LED_QUAD joystickPositionToLED(float scaled_x, float scaled_y) {
 float scaleAxis(int val) {
   float scaled = ((float)val - center)/max_potent_val;
 
-  if (abs(scaled) < hw_offset) {
+  if (abs(scaled) < fudge_fct) {
     scaled = 0.0;
   }
 

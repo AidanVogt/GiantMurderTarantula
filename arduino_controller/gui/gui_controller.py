@@ -9,7 +9,7 @@ import sys
 # GLOBALS
 BAUD_RATE = 9600
 TIMEOUT = 0.05
-PORT = "/dev/cu.usbmodem21401"
+PORT = "/dev/cu.usbmodem11301"
 
 arduino = serial.Serial(port=PORT, baudrate=BAUD_RATE, timeout=TIMEOUT)
 

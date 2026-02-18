@@ -3,17 +3,19 @@ import time
 
 # EVENTUAL CODE FOR RASPBERRY PI
 
+# init a joystick 
 pygame.init()
 pygame.joystick.init()
 
 
+# check
 if pygame.joystick.get_count() == 0:
     print("no controller")
     exit(1)
 
+# start
 joystick = pygame.joystick.Joystick(0)
 joystick.init()
-
 print(f"Controller: {joystick.get_name()}")
 
 
