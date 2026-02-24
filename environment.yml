@@ -1,9 +1,9 @@
 name: mech_qt
 channels:
-  - conda-forge
-  - bioconda
+  - defaults
 dependencies:
   - python=3.11
-  - pyserial
   - pygame
-prefix: /opt/homebrew/Caskroom/mambaforge/base/envs/mech_qt
+  - pyserial
+  - pyqt
+prefix: /home/pi/miniconda3/envs/mech_qt
