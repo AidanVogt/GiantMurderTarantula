@@ -21,6 +21,7 @@ def startJoystick():
     return joystick
 
 def monitorJoystick(j):
+    # for testing...
     
     while True:
         pygame.event.pump()
@@ -35,5 +36,5 @@ def monitorJoystick(j):
         
         time.sleep(0.01)
 
-   
+
 

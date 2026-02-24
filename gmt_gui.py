@@ -1,16 +1,16 @@
-import serial
 from PyQt5.QtCore import QSize, QTimer
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QVBoxLayout, QLabel, QSizePolicy
 import sys
-import pyqtgraph as pg
-import numpy as np
+import pygame
+# later call funcs from other file
+from joystick import startJoystick
+
+# for plot styling
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from joystick import startJoystick, monitorJoystick
 
-# GUI - visualize motor controls
-
+# Python GUI - plot motor controls
 
 # design the main window
 class JoystickPlot(QWidget):
@@ -27,7 +27,7 @@ class JoystickPlot(QWidget):
         self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.ax = self.figure.add_subplot(111)
-        self._setup_axes()
+        self.DrawAxes()
 
         # dot
         (self.dot,) = self.ax.plot(0, 0, "o", color="#e94560", markersize=14, zorder=5)
@@ -73,7 +73,7 @@ class JoystickPlot(QWidget):
         self.figure.tight_layout()
 
     def UpdatePosition(self, x, y):
-        """Call this with new joystick x/y values in range [-1, 1]."""
+        # updates the joystick position on the plot
         self.x_val = x
         self.y_val = y
         self.dot.set_data([x], [y])
@@ -92,35 +92,35 @@ class MainInterface(QMainWindow):
         global_title = QLabel("GMT Hexapod Controls")
         global_title.setStyleSheet("font-size: 40px;")
         
-        
         # set central widget and layout
         central_widget = QWidget()
         main_layout = QVBoxLayout()
         
-        # joystick
-        joystick = startJoystick()
+        # init joystick
+        self.joystick = startJoystick()
         self.x_val = -999
         self.y_val = -999
         
         title = QLabel("Right Joystick")
-        title.setStyleSheet("font-size: 18px; color: #8888cc; padding-bottom: 6px;")
+        title.setStyleSheet("font-size: 20px; color: #8888cc; padding-bottom: 6px;")
 
-        self.status_label = QLabel(self._joystick_status())
-        self.status_label.setStyleSheet("font-size: 13px; color: #5555aa; padding-bottom: 4px;")
+        self.status_label = QLabel(self.joystickStatus())
+        self.status_label.setStyleSheet("font-size: 18px; color: #5555aa; padding-bottom: 4px;")
 
-        self.coord_label = QLabel("X: 0.000   Y: 0.000")
-        self.coord_label.setStyleSheet("font-size: 14px; color: #aaaacc; padding-bottom: 8px;")
+        self.coord_label = QLabel("X: tbd   Y: tbd")
+        self.coord_label.setStyleSheet("font-size: 18px; color: #aaaacc; padding-bottom: 8px;")
 
-        # Joystick plot widget
+        # make joystick plot
         self.joystick_plot = JoystickPlot()
         self.joystick_plot.setMinimumSize(480, 480)
 
-        # Layout
+        # layout
         central_widget = QWidget()
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(24, 16, 24, 16)
         main_layout.setSpacing(4)
 
+        # add widgets
         main_layout.addWidget(global_title)
         main_layout.addWidget(title)
         main_layout.addWidget(self.status_label)
@@ -137,7 +137,7 @@ class MainInterface(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-        # Poll joystick at ~60 Hz
+        # poll joystick at ~60 Hz
         self.timer = QTimer()
         self.timer.timeout.connect(self.pollJoystick)
         self.timer.start(16)
@@ -145,41 +145,38 @@ class MainInterface(QMainWindow):
     def joystickStatus(self):
         if self.joystick:
             return f"Controller: {self.joystick.get_name()}"
-        return "Controller: Not connected — plug in and restart"
+        return "no controller"
 
     def pollJoystick(self):
+        
+        # start processing controls
+        pygame.event.pump()
 
-        # Try to reconnect if disconnected
+        # reconnect if none
         if self.joystick is None:
-            self._try_connect_joystick()
-            self.status_label.setText(self._joystick_status())
-            return
+            self.joystick = startJoystick()
+            self.status_label.setText(self.joystickStatus())
 
         try:
-            # Right joystick is typically axes 2 (X) and 3 (Y) on most gamepads.
-            # Adjust axis indices for your specific controller if needed.
-            num_axes = self.joystick.get_numaxes()
-            x = self.joystick.get_axis(2) if num_axes > 2 else 0.0
-            y = -self.joystick.get_axis(3) if num_axes > 3 else 0.0  # invert Y so up = positive
+            # get axes (right joystick only)
+            x = self.joystick.get_axis(2)
+            y = -self.joystick.get_axis(3) # invert the y
+            print(x,y)
 
-            # # Dead zone
-            # dead_zone = 0.05
-            # x = x if abs(x) > dead_zone else 0.0
-            # y = y if abs(y) > dead_zone else 0.0
+            # dead threshold
+            dead_zone = 0.05
+            x = x if abs(x) > dead_zone else 0.0
+            y = y if abs(y) > dead_zone else 0.0
 
-            self.joystick_plot.update_position(x, y)
+            # update plot position and coordinates
+            self.joystick_plot.UpdatePosition(x, y)
             self.coord_label.setText(f"X: {x:+.3f}   Y: {y:+.3f}")
 
+        # disconnect if any errors
         except Exception:
             self.joystick = None
             self.status_label.setText("Controller: Disconnected")
         
-
-
-        
-
-
-
 # run the app
 if __name__ == "__main__":
     app = QApplication(sys.argv)
