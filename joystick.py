@@ -1,6 +1,9 @@
 import pygame
 import time
 
+# weird - for the raspberry pi connection, use axes 3 and 4 for
+# the right thumb joystick. 2 is the left trigger
+
 def startJoystick():
     
     # init a joystick 
@@ -26,15 +29,16 @@ def monitorJoystick(j):
     while True:
         pygame.event.pump()
     
-        # read joystick axes (typically 0=left X, 1=left Y, 2=right X, 3=right Y)
+        # read joystick axes
         left_x = j.get_axis(0)
         left_y = j.get_axis(1)
-        right_x = j.get_axis(2)
-        right_y = j.get_axis(3)
+        right_x = j.get_axis(3)
+        right_y = j.get_axis(4)
         
         print(f"\rLeft: ({left_x:6.2f}, {left_y:6.2f})  |  Right: ({right_x:6.2f}, {right_y:6.2f})", end="")
         
         time.sleep(0.01)
 
 
-
+#j = startJoystick()
+#monitorJoystick(j)

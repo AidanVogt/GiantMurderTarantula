@@ -159,8 +159,8 @@ class MainInterface(QMainWindow):
 
         try:
             # get axes (right joystick only)
-            x = self.joystick.get_axis(2)
-            y = -self.joystick.get_axis(3) # invert the y
+            x = self.joystick.get_axis(3)
+            y = -self.joystick.get_axis(4)
             print(x,y)
 
             # dead threshold
