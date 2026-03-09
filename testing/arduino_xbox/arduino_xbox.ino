@@ -17,7 +17,7 @@ struct LED_QUAD {
 
 // helper for byte conversion
 uint8_t toByteValue(float v) {
-  return (uint8_t)constrain(v * 255.0, 0.0, 255.0);
+  return (uint8_t)(v * 255.0f)
 }
 
 LED_QUAD joystickPositionToLED(float scaled_x, float scaled_y) {
