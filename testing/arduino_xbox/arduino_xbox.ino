@@ -25,7 +25,10 @@ void setup() {
 void loop() {
 
     // only write if data packet is sent
-    if (Serial.available() >= 4) {
+    if (Serial.available() >= 5) {
+
+        // check if in sync
+        if (Serial.read() != 0xFF) return;
 
         // read led vals from pi
         int n = Serial.read();
@@ -38,7 +41,6 @@ void loop() {
         analogWrite(BLUE_LED_PIN, s);
         analogWrite(WHITE_LED_PIN, w);
         analogWrite(GREEN_LED_PIN, e);
-
     }
 
     delay(100);
