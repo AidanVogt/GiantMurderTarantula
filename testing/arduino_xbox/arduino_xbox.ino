@@ -46,7 +46,6 @@ void setup() {
 
   // joystick setup
   Serial.begin(9600);
-  pinMode(SW_PIN, INPUT_PULLUP);
 
   // led setup
   pinMode(RED_LED_PIN, OUTPUT);
