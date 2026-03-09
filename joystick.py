@@ -50,6 +50,8 @@ class GMTJoystick:
             arduino_port.write(data)
             print(f"Sent: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f} \n")
             print(data, "\n")
+            
+            time.sleep(0.01)
 
         # disconnect if any errors
         except Exception:
