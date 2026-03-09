@@ -28,10 +28,10 @@ void loop() {
     if (Serial.available() >= 4) {
 
         // read led vals from pi
-        int n = Serial.Read();
-        int s = Serial.Read();
-        int e = Serial.Read();
-        int w = Serial.Read();
+        int n = Serial.read();
+        int s = Serial.read();
+        int e = Serial.read();
+        int w = Serial.read();
 
         // change LED brightness
         analogWrite(RED_LED_PIN, n);
