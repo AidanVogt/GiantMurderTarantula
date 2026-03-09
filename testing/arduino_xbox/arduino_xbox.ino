@@ -24,7 +24,7 @@ void setup() {
 
 void loop() {
 
-    // only write if data packet is sent (causes blinking)
+    // only write if data packet is sent
     if (Serial.available() >= 4) {
 
         // read led vals from pi

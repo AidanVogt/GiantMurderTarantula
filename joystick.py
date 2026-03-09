@@ -22,10 +22,6 @@ class GMTJoystick:
         # globals
         self.dead_zone = 0.05
         
-        # maybe later
-        # self.x = self.j.get_axis(3)
-        # self.y = self.j.get_axis(4)
-        
     def filterSignal(self, x, y):
         # TODO
         
