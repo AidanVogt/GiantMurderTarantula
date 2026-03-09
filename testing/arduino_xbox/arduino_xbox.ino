@@ -25,24 +25,26 @@ void setup() {
 void loop() {
 
     // only write if data packet is sent
-    if (Serial.available() >= 4) {
-
-        // read led vals from pi
-        int n = Serial.read();
-        int s = Serial.read();
-        int e = Serial.read();
-        int w = Serial.read();
-
-        // change LED brightness
-        analogWrite(RED_LED_PIN, n);
-        analogWrite(BLUE_LED_PIN, s);
-        analogWrite(WHITE_LED_PIN, w);
-        analogWrite(GREEN_LED_PIN, e);
-
-        delay(100);
+    if (Serial.available() > 0) {
+        String line = Serial.readStringUntil('\n');
+        
+        int vals[4];
+        int idx = 0;
+        char *token = strtok((char*)line.c_str(), ",");
+        
+        while (token != NULL && idx < 4) {
+            vals[idx++] = atoi(token);
+            token = strtok(NULL, ",");
+        }
+        
+        if (idx == 4) {  // only write if full packet received
+            analogWrite(RED_LED_PIN,   vals[0]);
+            analogWrite(BLUE_LED_PIN,  vals[1]);
+            analogWrite(WHITE_LED_PIN, vals[3]);
+            analogWrite(GREEN_LED_PIN, vals[2]);
+        }
     }
 
-    
 }
 
 
