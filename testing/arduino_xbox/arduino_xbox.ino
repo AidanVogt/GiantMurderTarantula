@@ -61,7 +61,7 @@ void loop() {
     // only write if data packet is sent
     if (Serial.available() > 9) {
         // first byte is a specifier
-        char header = Serial.read()
+        char header = Serial.read();
 
         // read x and y from Pi
         float x, y;
@@ -78,7 +78,7 @@ void loop() {
         analogWrite(GREEN_LED_PIN, led_vals.g);
 
         // print read stuff
-        Serial.print(header) // first byte specifies instruction (can remove later)
+        Serial.print(header); // first byte specifies instruction (can remove later)
         Serial.print(x);
         Serial.print(",");
         Serial.print(y);
