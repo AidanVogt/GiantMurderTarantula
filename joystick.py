@@ -21,6 +21,16 @@ class GMTJoystick:
         # globals
         self.dead_zone = 0.05
         
+        # maybe later
+        # self.x = self.j.get_axis(3)
+        # self.y = self.j.get_axis(4)
+        
+    def filterSignal(self, x, y):
+        x = x if abs(x) > self.dead_zone else 0.0
+        y = y if abs(y) > self.dead_zone else 0.0
+        
+        return x, y
+        
     def sendToSerial(self, arduino_port):
         # start processing controls
         pygame.event.pump()
@@ -32,10 +42,9 @@ class GMTJoystick:
             print(x,y)
 
             # dead threshold
-            x = x if abs(x) > self.dead_zone else 0.0
-            y = y if abs(y) > self.dead_zone else 0.0
+            x_filt, y_filt = self.j.filterSignal(x, y)
             
-            data = struct.pack('cff', b"c", x, y)
+            data = struct.pack('cff', b"c", x_filt, y_filt)
             arduino_port.write(data)
             print(f"Sent: x={x:.2f}, y={y:.2f}")
 

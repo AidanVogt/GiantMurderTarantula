@@ -57,32 +57,33 @@ void setup() {
 
 void loop() {
 
-    // only write if data packet is sent
-    if (Serial.available() > 9) {
-        // first byte is a specifier
-        char header = Serial.read();
+    // only write if data packet is sent (causes blinking)
+    // if (Serial.available() > 9) {
+    // }
 
-        // read x and y from Pi
-        float x, y;
-        Serial.readBytes((char*)&x, 4);
-        Serial.readBytes((char*)&y, 4);
+    // first byte is a specifier
+    char header = Serial.read();
 
-        // convert to LED vals
-        LED_QUAD led_vals = joystickPositionToLED(x, y);
+    // read x and y from Pi
+    float x, y;
+    Serial.readBytes((char*)&x, 4);
+    Serial.readBytes((char*)&y, 4);
 
-        // change LED brightness
-        analogWrite(RED_LED_PIN, led_vals.r);
-        analogWrite(BLUE_LED_PIN, led_vals.b);
-        analogWrite(WHITE_LED_PIN, led_vals.w);
-        analogWrite(GREEN_LED_PIN, led_vals.g);
+    // convert to LED vals
+    LED_QUAD led_vals = joystickPositionToLED(x, y);
 
-        // print read stuff
-        Serial.print(header); // first byte specifies instruction (can remove later)
-        Serial.print(x);
-        Serial.print(",");
-        Serial.print(y);
-        Serial.print("\n");
-    }
+    // print read stuff
+    Serial.print(header); // first byte specifies instruction (can remove later)
+    Serial.print(x);
+    Serial.print(",");
+    Serial.print(y);
+    Serial.print("\n");
+
+    // change LED brightness
+    analogWrite(RED_LED_PIN, led_vals.r);
+    analogWrite(BLUE_LED_PIN, led_vals.b);
+    analogWrite(WHITE_LED_PIN, led_vals.w);
+    analogWrite(GREEN_LED_PIN, led_vals.g);
 
 
     delay(100);
