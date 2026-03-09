@@ -1,7 +1,6 @@
 import pygame
 import time
 import struct 
-import math
 
 # weird - for the raspberry pi connection, use axes 3 and 4 for
 # the right thumb joystick. 2 is the left trigger
@@ -49,7 +48,8 @@ class GMTJoystick:
             
             data = struct.pack('4B', int(n * 255), int(s * 255), int(e * 255), int(w * 255))
             arduino_port.write(data)
-            print(f"Sent: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f}")
+            print(f"Sent: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f} \n")
+            print(data, "\n")
 
         # disconnect if any errors
         except Exception:
