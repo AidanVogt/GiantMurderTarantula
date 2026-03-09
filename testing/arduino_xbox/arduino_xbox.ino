@@ -28,7 +28,7 @@ void loop() {
     if (Serial.available() >= 5) {
 
         // check if in sync
-        if (Serial.read() != 0xFF) return;
+        // if (Serial.read() != "x") return;
 
         // read led vals from pi
         int n = Serial.read();
@@ -41,9 +41,11 @@ void loop() {
         analogWrite(BLUE_LED_PIN, s);
         analogWrite(WHITE_LED_PIN, w);
         analogWrite(GREEN_LED_PIN, e);
+
+        delay(100);
     }
 
-    delay(100);
+    
 }
 
 
