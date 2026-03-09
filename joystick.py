@@ -1,6 +1,7 @@
 import pygame
 import time
 import struct 
+import math
 
 # weird - for the raspberry pi connection, use axes 3 and 4 for
 # the right thumb joystick. 2 is the left trigger
@@ -44,14 +45,20 @@ class GMTJoystick:
             x = x if abs(x) > self.dead_zone else 0.0
             y = y if abs(y) > self.dead_zone else 0.0
             
-            data = struct.pack('cff', b"c", x, y)
+            # convert to LED
+            n = y if y > 0 else 0.0
+            s = abs(y) if y < 0 else 0.0
+            e = x if x > 0 else 0.0
+            w = abs(x) if x < 0 else 0.0
+            
+            data = struct.pack('4B', int(n * 255), int(s * 255), int(e * 255), int(w * 255))
             arduino_port.write(data)
-            print(f"Sent: x={x:.2f}, y={y:.2f}")
+            print(f"Sent: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f}")
 
         # disconnect if any errors
         except Exception:
             self.j = None
-            print("Ctrl disconnected")
+            print("ERRRRROR")
         
         
 ######################################################
