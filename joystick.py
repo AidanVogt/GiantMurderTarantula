@@ -26,8 +26,7 @@ class GMTJoystick:
         # self.y = self.j.get_axis(4)
         
     def filterSignal(self, x, y):
-        x = x if abs(x) > self.dead_zone else 0.0
-        y = y if abs(y) > self.dead_zone else 0.0
+        # TODO
         
         return x, y
         
@@ -42,9 +41,10 @@ class GMTJoystick:
             print(x,y)
 
             # dead threshold
-            x_filt, y_filt = self.j.filterSignal(x, y)
+            x = x if abs(x) > self.dead_zone else 0.0
+            y = y if abs(y) > self.dead_zone else 0.0
             
-            data = struct.pack('cff', b"c", x_filt, y_filt)
+            data = struct.pack('cff', b"c", x, y)
             arduino_port.write(data)
             print(f"Sent: x={x:.2f}, y={y:.2f}")
 
