@@ -1,5 +1,6 @@
 import serial
 from joystick import GMTJoystick
+import pygame
 
 # GLOBALS
 BAUD_RATE = 9600
@@ -11,6 +12,14 @@ arduino1 = serial.Serial(port=PORT, baudrate=BAUD_RATE, timeout=TIMEOUT)
 
 # new instance of joystick
 js = GMTJoystick()
-js.sendToSerial(arduino1)
+
+try:
+    while True:
+        js.sendToSerial(arduino1)
+
+except KeyboardInterrupt:
+    print("Stopped")
+    arduino1.close()
+    pygame.quit()
 
 
