@@ -25,7 +25,7 @@ LED_QUAD joystickPositionToLED(float scaled_x, float scaled_y) {
 
   // Y axis
   if (scaled_y >= 0) {
-    leds.r    = toByteValue(scaled_y);
+    leds.r = toByteValue(scaled_y);
   }
   else {
     leds.b = toByteValue(-scaled_y);
@@ -36,7 +36,7 @@ LED_QUAD joystickPositionToLED(float scaled_x, float scaled_y) {
     leds.w = toByteValue(scaled_x);
   }
   else { 
-    leds.g  = toByteValue(-scaled_x);
+    leds.g = toByteValue(-scaled_x);
   }
 
   return leds;
@@ -82,6 +82,12 @@ void loop() {
         analogWrite(BLUE_LED_PIN, led_vals.b);
         analogWrite(WHITE_LED_PIN, led_vals.w);
         analogWrite(GREEN_LED_PIN, led_vals.g);
+
+    } else {
+        analogWrite(RED_LED_PIN, 0);
+        analogWrite(BLUE_LED_PIN, 0);
+        analogWrite(WHITE_LED_PIN, 0);
+        analogWrite(GREEN_LED_PIN, 0);
 
     }
 
