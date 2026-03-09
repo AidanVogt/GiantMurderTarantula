@@ -47,7 +47,7 @@ class GMTJoystick:
             w = abs(x) if x < 0 else 0.0
             
             # pack and send to serial port
-            data = struct.pack('5B', 0xFF, int(n * 255), int(s * 255), int(e * 255), int(w * 255))
+            data = struct.pack('5B', 0xFF, min(int(n * 255), 254), min(int(s * 255), 254), min(int(e * 255), 254), min(int(w * 255), 254))
             arduino_port.write(data)
             print(f"Sent: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f} \n")
 
