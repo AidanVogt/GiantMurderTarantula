@@ -25,10 +25,7 @@ void setup() {
 void loop() {
 
     // only write if data packet is sent
-    if (Serial.available() >= 5) {
-
-        // check if in sync
-        // if (Serial.read() != "x") return;
+    if (Serial.available() >= 4) {
 
         // read led vals from pi
         int n = Serial.read();
