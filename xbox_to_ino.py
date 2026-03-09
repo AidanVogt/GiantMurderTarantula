@@ -1,6 +1,7 @@
 import serial
 from joystick import GMTJoystick
 import pygame
+import time
 
 # GLOBALS
 BAUD_RATE = 9600
@@ -16,6 +17,7 @@ js = GMTJoystick()
 try:
     while True:
         js.sendToSerial(arduino1)
+        time.sleep(0.01)
 
 except KeyboardInterrupt:
     print("Stopped")

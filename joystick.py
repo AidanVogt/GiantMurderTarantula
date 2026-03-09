@@ -46,12 +46,10 @@ class GMTJoystick:
             e = x if x > 0 else 0.0
             w = abs(x) if x < 0 else 0.0
             
+            # pack and send to serial port
             data = struct.pack('4B', int(n * 255), int(s * 255), int(e * 255), int(w * 255))
             arduino_port.write(data)
             print(f"Sent: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f} \n")
-            print(data, "\n")
-            
-            time.sleep(0.01)
 
         # disconnect if any errors
         except Exception:
