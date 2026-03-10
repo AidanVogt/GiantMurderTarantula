@@ -1,6 +1,5 @@
 import pygame
 import time
-import struct 
 
 # weird - for the raspberry pi connection, use axes 3 and 4 for
 # the right thumb joystick. 2 is the left trigger
@@ -21,7 +20,8 @@ class GMTJoystick:
         # globals
         self.dead_zone = 0.05
         
-    def filterSignal(self, x, y):
+    def getAngle(self, x, y):
+        
         # TODO
         
         return x, y
@@ -46,7 +46,7 @@ class GMTJoystick:
             e = x if x > 0 else 0.0
             w = abs(x) if x < 0 else 0.0
             
-            # pack and send to serial port
+            # pack and send to serial port (USE STRINGS - EASIER)
             data = f"{int(n*255)},{int(s*255)},{int(e*255)},{int(w*255)}\n"
             arduino_port.write(data.encode('ascii'))
             print(f"Vals: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f} \n")

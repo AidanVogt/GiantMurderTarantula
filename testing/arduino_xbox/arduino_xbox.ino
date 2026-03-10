@@ -24,7 +24,7 @@ void setup() {
 
 void loop() {
 
-    // only write if data packet is sent
+    // check line
     if (Serial.available() > 0) {
         String line = Serial.readStringUntil('\n');
         
@@ -37,7 +37,8 @@ void loop() {
             token = strtok(NULL, ",");
         }
         
-        if (idx == 4) {  // only write if full packet received
+        // write to LEDs
+        if (idx == 4) {
             analogWrite(RED_LED_PIN,   vals[0]);
             analogWrite(BLUE_LED_PIN,  vals[1]);
             analogWrite(WHITE_LED_PIN, vals[3]);
