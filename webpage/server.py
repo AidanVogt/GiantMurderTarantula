@@ -45,17 +45,17 @@ PAGE = """
     <form id="cfgForm">
       <div class="row">
         <label>Deadzone:
-          <input id="deadzone" type="number" min="0" max="1" step="0.01" />
+          <input id="deadzone" type="number" min="0" max="1" step="0.01" value="0.08" />
         </label>
       </div>
       <div class="row">
         <label>Telemetry Hz:
-          <input id="telemetry_hz" type="number" min="1" max="120" step="1" />
+          <input id="telemetry_hz" type="number" min="1" max="120" step="1" value="30" />
         </label>
       </div>
       <div class="row">
         <label>Invert Y:
-          <input id="invert_y" type="checkbox" />
+          <input id="invert_y" type="checkbox" checked />
         </label>
       </div>
       <button type="submit">Save Config</button>
@@ -75,11 +75,18 @@ PAGE = """
     const cfgResultEl = document.getElementById("cfgResult");
 
     async function loadConfig() {
-      const r = await fetch("/api/config");
-      const cfg = await r.json();
-      deadzoneEl.value = cfg.deadzone;
-      telemetryHzEl.value = cfg.telemetry_hz;
-      invertYEl.checked = cfg.invert_y;
+      try {
+        const r = await fetch("/api/config");
+        if (!r.ok) {
+          throw new Error(`HTTP ${r.status}`);
+        }
+        const cfg = await r.json();
+        if (typeof cfg.deadzone === "number") deadzoneEl.value = cfg.deadzone;
+        if (typeof cfg.telemetry_hz === "number") telemetryHzEl.value = cfg.telemetry_hz;
+        if (typeof cfg.invert_y === "boolean") invertYEl.checked = cfg.invert_y;
+      } catch (err) {
+        cfgResultEl.textContent = " config load failed";
+      }
     }
 
     const es = new EventSource("/stream");
