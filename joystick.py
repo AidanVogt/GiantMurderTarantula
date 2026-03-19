@@ -65,13 +65,16 @@ def monitorJoystick(j):
         pygame.event.pump()
     
         # read joystick axes
-        left_x = j.get_axis(0)
-        left_y = j.get_axis(1)
-        right_x = j.get_axis(3)
-        right_y = j.get_axis(4)
-        
-        print(f"\rLeft: ({left_x:6.2f}, {left_y:6.2f})  |  Right: ({right_x:6.2f}, {right_y:6.2f})", end="")
-        
+        dpad = j.get_hat(0)
+        x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
+        y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
+        print(x, y)
+
         time.sleep(0.01)
+        
+        
+        
+j = startJoystick()
+monitorJoystick(j)
 
 
