@@ -20,36 +20,16 @@ class GMTJoystick:
         # globals
         self.dead_zone = 0.05
         
-    def getAngle(self, x, y):
-        
-        # TODO
-        
-        return x, y
-        
     def sendToSerial(self, arduino_port):
         # start processing controls
         pygame.event.pump()
 
         try:
             # get axes (right joystick only)
-            x = self.j.get_axis(3)
-            y = -self.j.get_axis(4)
-            print(x,y)
-
-            # dead threshold
-            x = x if abs(x) > self.dead_zone else 0.0
-            y = y if abs(y) > self.dead_zone else 0.0
-            
-            # convert to LED
-            n = y if y > 0 else 0.0
-            s = abs(y) if y < 0 else 0.0
-            e = x if x > 0 else 0.0
-            w = abs(x) if x < 0 else 0.0
-            
-            # pack and send to serial port (USE STRINGS - EASIER)
-            data = f"{int(n*255)},{int(s*255)},{int(e*255)},{int(w*255)}\n"
-            arduino_port.write(data.encode('ascii'))
-            print(f"Vals: N={n:.2f} S={s:.2f} E={e:.2f} W={w:.2f} \n")
+            dpad = self.j.get_hat(0)
+            x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
+            y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
+            print(x, y)
 
         # disconnect if any errors
         except Exception:
