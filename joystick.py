@@ -3,6 +3,7 @@ import time
 
 # weird - for the raspberry pi connection, use axes 3 and 4 for
 # the right thumb joystick. 2 is the left trigger
+# NOTE - switched to the dpad for controls, easier to implement
 
 class GMTJoystick:
     def __init__(self):
@@ -10,7 +11,7 @@ class GMTJoystick:
         pygame.joystick.init()
         
         if pygame.joystick.get_count() == 0:
-            print("no contrller")
+            print("no controller")
             exit(1)
             
         self.j = pygame.joystick.Joystick(0)
@@ -20,7 +21,7 @@ class GMTJoystick:
         # globals
         self.dead_zone = 0.05
         
-    def sendToSerial(self, arduino_port):
+    def sendControls(self, arduino_id):
         # start processing controls
         pygame.event.pump()
 
@@ -32,9 +33,9 @@ class GMTJoystick:
             print(x, y)
 
         # disconnect if any errors
-        except Exception:
+        except Exception as e:
             self.j = None
-            print("ERRRRROR")
+            print(f"ERROR: {e}")
         
         
 ######################################################
@@ -59,12 +60,11 @@ def startJoystick():
     return joystick
 
 def monitorJoystick(j):
-    # for testing...
     
     while True:
         pygame.event.pump()
     
-        # read joystick axes
+        # read dpad
         dpad = j.get_hat(0)
         x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
         y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
@@ -73,8 +73,8 @@ def monitorJoystick(j):
         time.sleep(0.01)
         
         
-        
-j = startJoystick()
-monitorJoystick(j)
+# test joystick readings        
+# j = startJoystick()
+# monitorJoystick(j)
 
 
