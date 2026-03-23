@@ -40,8 +40,6 @@ class GMTJoystick:
             return None
             
     
-        
-        
 ######################################################
 # for testing
 def startJoystick():

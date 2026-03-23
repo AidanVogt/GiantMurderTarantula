@@ -41,7 +41,15 @@ class I2CBus:
                 finished_movement = False
                 break
     
-        return finished_movement    
+        return finished_movement
+    
+    def homeAllLegs(self):
+        
+        for device in self.devices:
+            print(f"Sending home cmd to {hex(device.address)}\n")
+            
+            pass
+        pass    
     
 class GMTIno:
     def __init__(self, address):
