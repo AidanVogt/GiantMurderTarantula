@@ -18,10 +18,7 @@ class GMTJoystick:
         self.j.init()
         print(f"Controller: {self.j.get_name()}")
         
-        # globals
-        self.dead_zone = 0.05
-        
-    def sendControls(self, arduino_id):
+    def getControls(self, arduino_id):
         # start processing controls
         pygame.event.pump()
 
@@ -36,6 +33,8 @@ class GMTJoystick:
         except Exception as e:
             self.j = None
             print(f"ERROR: {e}")
+            
+    
         
         
 ######################################################

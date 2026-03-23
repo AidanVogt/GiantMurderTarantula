@@ -1,5 +1,12 @@
 import smbus2
 
+# Sending instructions from the pi to the arduinos
+# Gait planning done at highest level
+# Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
+    # map cycles to actions (have an action CLASS)
+# blocker to read input - want to wait until we have processed the full movement before
+# getting next input
+
 class InoBus:
     def __init__(self):
         self.bus = smbus2.SMBus(1)
