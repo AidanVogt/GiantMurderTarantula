@@ -17,22 +17,27 @@ class GMTJoystick:
         self.j = pygame.joystick.Joystick(0)
         self.j.init()
         print(f"Controller: {self.j.get_name()}")
+        self.connected = True
         
-    def getControls(self, arduino_id):
-        # start processing controls
-        pygame.event.pump()
+    def getControls(self):
+            
+        if not self.connected:
+            return None
 
         try:
-            # get axes (right joystick only)
+            pygame.event.pump()
+
             dpad = self.j.get_hat(0)
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
-            print(x, y)
+            
+            return (x, y)
 
-        # disconnect if any errors
         except Exception as e:
+            self.connected = False
             self.j = None
-            print(f"ERROR: {e}")
+            print(f"Err: {e}")
+            return None
             
     
         
