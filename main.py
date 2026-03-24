@@ -1,48 +1,58 @@
+from gait_and_homing import completeOneMovementCycle
 from i2c_comm import I2CBus, GMTIno
 from joystick import GMTJoystick
 import threading
 import time
 
 # init bus and controller
+print("Initializing I2C Bus and controller")
 bus = I2CBus()
 j = GMTJoystick()
 
 # initialize legs
-leg1 = GMTIno(0x10)
-leg2 = GMTIno(0x11)
-leg3 = GMTIno(0x12)
+leg1 = GMTIno("leg1", 0x10)
+leg2 = GMTIno("leg2", 0x11)
+leg3 = GMTIno("leg3", 0x12)
 
-leg4 = GMTIno(0x13)
-leg5 = GMTIno(0x14)
-leg6 = GMTIno(0x15)
+leg4 = GMTIno("leg4", 0x13)
+leg5 = GMTIno("leg5", 0x14)
+leg6 = GMTIno("leg6", 0x15)
 
 # add legs to bus
 bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
+print([d.name for d in bus.devices])
+print(leg1.bus)
 
 # set motors as idle
-motors_complete = threading.Event()
-motors_complete.set()
+cycle_complete = threading.Event()
+cycle_complete.set()
 
 # main loop for converting joystick to arduino-side commands
 def joystickLoop():
     
     while True:
         
-        # get raw controller input
-        controls = j.getControls()
-        print(controls)
+        # only move if a full movement cycle is done
+        if cycle_complete:
+        
+            # get raw controller input
+            controls = j.getControls()
+            print(controls)
 
-        if controls is not None:
-            x, y = controls
+            if controls is not None:
+                # get controls
+                x, y, btn = controls
+                
+                # emergency stop TODO can make more robust
+                if btn == 1:
+                    # TODO send stop instruction to all inos (write a function for this)
+                    break
 
-            # convert D-pad input to movement mappings
-            # movement = processControls(x, y) TODO WRITE THIS FUNC
-
-            # send relevant commands to the legs
-            # sendToLegs(movement) TODO WRITE THIS FUNC
-            
+                # convert x and y signal to gait
+                completeOneMovementCycle(x, y, bus)
+                
         time.sleep(0.05)
-
+        
 joystickLoop()
 
 # def pollLoop():
@@ -50,7 +60,7 @@ joystickLoop()
 #     while True:
 #         # pollArduinos returns True when all motors confirm complete
 #         if bus.pollArduinos():    
-#             motors_complete.set() # release 
+#             cycle_complete.set() # release 
             
 #         time.sleep(0.05)
 

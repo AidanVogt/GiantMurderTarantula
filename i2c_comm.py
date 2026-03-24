@@ -1,5 +1,5 @@
 import smbus2
-import struct
+
 # Sending instructions from the pi to the arduinos
 # Gait planning done at highest level
 # Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
@@ -10,10 +10,10 @@ import struct
 
 class Instruction:
     def __init__(self, instr_type, phase):
-        # instr type: 0x00 = home device, 0x01 = movement cycle, 0x02 = stop all motors
+        # instr types: 0x00 = home, 0x01 = fwd, 0x02 = back, 0x03 = cw, 0x04 - ccw
         self.instr_type = instr_type
         
-        # phase: 0 = forward, 1 = back, 2 = CW, 3 = CCW
+        # phase: -1 = No movement, 0 = leg up, 1 = leg down, 2 = hip forward, 3 = hip back, 4 = groudned hip forward, 5 = grounded hip back
         self.phase = phase
 
 
@@ -21,14 +21,14 @@ class I2CBus:
     def __init__(self):
         # i2c 1 port on pi
         self.bus = smbus2.SMBus(1)
-        self.devices = []
+        self.devices = {}
         
     def addDevices(self, *devices):
         # add inos to devices list
         for device in devices:
             if isinstance(device, GMTIno):
                 device.bus = self
-                self.devices.append(device)
+                self.devices[device.name] = device
 
     def pollArduinos(self):
         # poll all arduinos on the bus to check their status
@@ -37,6 +37,7 @@ class I2CBus:
         
         finished_movement = True
         
+        # TODO update iter
         for device in self.devices:
 
             try:
@@ -54,9 +55,10 @@ class I2CBus:
         return finished_movement
     
 class GMTIno:
-    def __init__(self, address):
+    def __init__(self, name, address):
         # init unique address for Arduinos
         self.address = address
+        self.name = name
         self.bus = None
         
     def sendData(self, register, data):

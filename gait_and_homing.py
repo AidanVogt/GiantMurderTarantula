@@ -1,45 +1,111 @@
-from i2c_comm import Instruction
+from i2c_comm import I2CBus, Instruction
+import time
 
-# globals for movement
+# instruction globals
 HOME = 0x00
-MOVE = 0x01
-STOP = 0x02
+FORWARD = 0x01
+BACK = 0x02
+CW = 0x03
+CCW = 0x04
 
-FORWARD = 0
-BACK = 1
-CW = 2
-CCW = 3
+# arduino-side register
+REGISTER = 0x20 # modify later if needed
 
-def signalsToGait(x, y):
+# phase globals
+NO_MOVE = -1
+LEG_UP = 0
+LEG_DOWN = 1
+HIP_FORWARD = 2
+HIP_BACK = 3
+HIP_FORWARD_GROUNDED = 4
+HIP_BACK_GROUNDED = 5
+
+# determine which movement cycle to conduct based on x and y from dpad
+def completeOneMovementCycle(x: int, y:int , bus: I2CBus):
     
     if x == 1:
-        moveCwOneCycle()
+        print("Clockwise")
+        moveCwOneCycle(bus)
     
     elif x == -1:
-        moveCCwOneCycle()
+        print("Counterclockwise")
+        moveCCwOneCycle(bus)
     
     elif y==1:
-        moveForwardOneCycle()
+        print("Forward")
+        moveForwardOneCycle(bus)
         
     elif y == -1:
-        moveBackOneCycle()
+        print("Back")
+        moveBackOneCycle(bus)
 
+# send homing signal for the entire hexapod
+def homeHexapod(bus: I2CBus):
+    # TODO
+    
+    home = Instruction(HOME, NO_MOVE)
+    
+    pass
 
 # define coordinated movements for forward/back/cw/ccw
-def moveForwardOneCycle():
+# hexapod wave gait makes the most sense (one cycle as all 6 legs move forward)
+def moveForwardOneCycle(bus: I2CBus):
+    
+    # define instruction structs to send
+    
+    # for legs that move up
+    up = Instruction(FORWARD, LEG_UP)
+    over = Instruction(FORWARD, HIP_FORWARD)
+    down = Instruction(FORWARD, LEG_DOWN)
+    
+    # for grounded legs attached at the hip
+    ground_adjust = Instruction(FORWARD, HIP_FORWARD_GROUNDED)
+    
+    # TODO need to figure out how to do the ground adjustment
+    
+    # first 3 legs raise and move
+    bus.devices["leg1"].sendData(REGISTER, up)
+    bus.devices["leg1"].sendData(REGISTER, over)
+    bus.devices["leg1"].sendData(REGISTER, down)
+    
+    # do we need this?
+    time.sleep(0.02)
+    bus.devices["leg2"].sendData(REGISTER, up)
+    bus.devices["leg2"].sendData(REGISTER, over)
+    bus.devices["leg2"].sendData(REGISTER, down)
+    
+    time.sleep(0.02)
+    bus.devices["leg3"].sendData(REGISTER, up)
+    bus.devices["leg3"].sendData(REGISTER, over)
+    bus.devices["leg3"].sendData(REGISTER, down)
+    
+    
+    # second 3 legs raise and move
+    bus.devices["leg4"].sendData(REGISTER, up)
+    bus.devices["leg4"].sendData(REGISTER, over)
+    bus.devices["leg4"].sendData(REGISTER, down)
+    
+    # do we need this?
+    time.sleep(0.02)
+    bus.devices["leg5"].sendData(REGISTER, up)
+    bus.devices["leg5"].sendData(REGISTER, over)
+    bus.devices["leg5"].sendData(REGISTER, down)
+    
+    time.sleep(0.02)
+    bus.devices["leg6"].sendData(REGISTER, up)
+    bus.devices["leg6"].sendData(REGISTER, over)
+    bus.devices["leg6"].sendData(REGISTER, down)
+    
+
+def moveBackOneCycle(bus: I2CBus):
     pass
 
-def moveBackOneCycle():
+def moveCwOneCycle(bus: I2CBus):
     pass
 
-def moveCwOneCycle():
+def moveCCwOneCycle(bus: I2CBus):
     pass
 
-def moveCCwOneCycle():
-    pass
-
+# homing a single leg
 def homeSingleLeg():
     home_instr = Instruction(0x00, -1)
-    
-    
-    pass
