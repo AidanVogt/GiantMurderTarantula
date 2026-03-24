@@ -20,6 +20,7 @@ class GMTJoystick:
         self.connected = True
         
     def getControls(self):
+        # returns controls as [x, y, B]
             
         if not self.connected:
             return None
@@ -31,7 +32,12 @@ class GMTJoystick:
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
             
-            return (x, y)
+            # buttons
+            for i in range(self.j.get_numbuttons()):
+                if self.j.get_button(i):
+                    print(f"Button pressed: {i}")
+            
+            return (x, y, -1)
 
         except Exception as e:
             self.connected = False

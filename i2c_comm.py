@@ -1,11 +1,21 @@
 import smbus2
-
+import struct
 # Sending instructions from the pi to the arduinos
 # Gait planning done at highest level
 # Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
     # map cycles to actions (have an action CLASS)
 # blocker to read input - want to wait until we have processed the full movement before
 # getting next input
+
+
+class Instruction:
+    def __init__(self, instr_type, phase):
+        # instr type: 0x00 = home device, 0x01 = movement cycle, 0x02 = stop all motors
+        self.instr_type = instr_type
+        
+        # phase: 0 = forward, 1 = back, 2 = CW, 3 = CCW
+        self.phase = phase
+
 
 class I2CBus:
     def __init__(self):
@@ -43,14 +53,6 @@ class I2CBus:
     
         return finished_movement
     
-    def homeAllLegs(self):
-        
-        for device in self.devices:
-            print(f"Sending home cmd to {hex(device.address)}\n")
-            
-            pass
-        pass    
-    
 class GMTIno:
     def __init__(self, address):
         # init unique address for Arduinos
@@ -58,6 +60,8 @@ class GMTIno:
         self.bus = None
         
     def sendData(self, register, data):
+        # data should be of type Instruction
+        
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
