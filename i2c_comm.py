@@ -23,7 +23,7 @@ class I2CBus:
         self.bus = smbus2.SMBus(1)
         self.devices = []
         
-    def addDevicesToBus(self, *devices):
+    def addDevices(self, *devices):
         # add inos to devices list
         for device in devices:
             if isinstance(device, GMTIno):
