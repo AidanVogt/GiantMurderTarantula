@@ -37,7 +37,7 @@ class GMTJoystick:
                 if self.j.get_button(i):
                     print(f"Button pressed: {i}")
             
-            return (x, y, -1)
+            return (x, y)
 
         except Exception as e:
             self.connected = False
