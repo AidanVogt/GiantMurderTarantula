@@ -24,8 +24,7 @@ print([d.name for d in bus.devices])
 print(leg1.bus)
 
 # set motors as idle
-cycle_complete = threading.Event()
-cycle_complete.set()
+cycle_complete = True
 
 # main loop for converting joystick to arduino-side commands
 def joystickLoop():
@@ -41,13 +40,8 @@ def joystickLoop():
 
             if controls is not None:
                 # get controls
-                x, y, btn = controls
+                x, y = controls
                 
-                # emergency stop TODO can make more robust
-                if btn == 1:
-                    # TODO send stop instruction to all inos (write a function for this)
-                    break
-
                 # convert x and y signal to gait
                 completeOneMovementCycle(x, y, bus)
                 
@@ -55,18 +49,3 @@ def joystickLoop():
         
 joystickLoop()
 
-# def pollLoop():
-    
-#     while True:
-#         # pollArduinos returns True when all motors confirm complete
-#         if bus.pollArduinos():    
-#             cycle_complete.set() # release 
-            
-#         time.sleep(0.05)
-
-
-# # concurrent polling and joystick processing
-# t1 = threading.Thread(target=joystickLoop, daemon=True)
-# t2 = threading.Thread(target=pollLoop, daemon=True)
-# t1.start()
-# t2.start()

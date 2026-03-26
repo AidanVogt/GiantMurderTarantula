@@ -32,16 +32,7 @@ class GMTJoystick:
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
             
-            # if no button, return -1 for button
-            button = -1
-            
-            # buttons
-            for i in range(self.j.get_numbuttons()):
-                if self.j.get_button(i):
-                    print(f"Button pressed: {i}")
-                    button = i
-            
-            return (x, y, button)
+            return (x, y)
 
         except Exception as e:
             self.connected = False

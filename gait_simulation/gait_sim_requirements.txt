@@ -1,0 +1,14 @@
+absl-py==2.4.0
+etils==1.13.0
+fsspec==2026.2.0
+glfw==2.10.0
+ImageIO==2.37.3
+importlib_resources==6.5.2
+mujoco==3.6.0
+mujoco-python-viewer==0.1.4
+numpy==2.2.6
+pillow==12.1.1
+PyOpenGL==3.1.10
+PyYAML==6.0.3
+typing_extensions==4.15.0
+zipp==3.23.0
