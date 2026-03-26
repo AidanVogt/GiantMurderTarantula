@@ -1,5 +1,6 @@
 # custom
 gait_simulation/gait_sim
+gait_simulation/MUJOCO_LOG.TXT
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

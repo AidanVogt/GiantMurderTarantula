@@ -19,7 +19,8 @@ dt = model.opt.timestep  # 0.002 s per step
 # Hip:  positive = forward swing, negative = backward swing
 # Knee: negative = lift foot up, near zero = foot down
 # =============================================================================
- 
+
+# TODO fix tripod gait funcs
 def tripod_cw(t):
     """
     Tripod gait — clockwise rotation.
@@ -80,7 +81,7 @@ def wave_backward(t):
 # Run MuJoCo viewer
 # =============================================================================
 
-GAIT = tripod_ccw
+GAIT = wave_forward
 
 with mujoco.viewer.launch_passive(model, data) as viewer:
     while viewer.is_running():
