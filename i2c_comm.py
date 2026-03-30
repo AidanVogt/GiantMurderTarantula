@@ -66,7 +66,7 @@ class GMTIno:
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        self.bus.bus.write_i2c_block_data(self.address, data)
+        self.bus.bus.write_i2c_block_data(self.address, register, data=data)
         
     def readI2C(self):
         if self.bus is None:
