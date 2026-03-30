@@ -14,7 +14,6 @@ Instruction received;
 void setup() {
   Wire.begin(INO_ADDRESS);
   Wire.onReceive(getInstruction);  // Register receive callback
-  Wire.onRequest(sendData);     // Register request callback
   Serial.begin(9600);
 }
 
@@ -23,10 +22,15 @@ void loop() {
 }
 
 void getInstruction(int numBytes) {
+  Serial.println("numBytes");
   Serial.println(numBytes);
+
   while (Wire.available()) {
     unsigned char c  = Wire.read();
+    Serial.println(c);
+
   }
+
 }
 
 void sendData() {
