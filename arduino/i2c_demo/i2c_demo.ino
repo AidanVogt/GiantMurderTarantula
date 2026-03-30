@@ -23,14 +23,9 @@ void loop() {
 }
 
 void getInstruction(int numBytes) {
-  if (numBytes >= 2) {
-    received.instr_type = Wire.read();
-    received.phase = Wire.read();
-
-    Serial.print("instr_type: ");
-    Serial.println(received.instr_type);
-    Serial.print("phase: ");
-    Serial.println(received.phase);
+  Serial.println(numBytes);
+  while (Wire.available()) {
+    unsigned char c  = Wire.read();
   }
 }
 

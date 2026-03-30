@@ -110,8 +110,8 @@ def moveCCwOneCycle(bus: I2CBus):
 def testI2CJoystick(x: int, y:int , bus: I2CBus):
     
     # fwd - 0x01, back 0x02
-    test_fwd = Instruction(FORWARD, LEG_UP)
-    test_back = Instruction(BACK, LEG_DOWN)
+    test_fwd = 0
+    test_back = 1
     
     if x == 1:
         print("Clockwise")
