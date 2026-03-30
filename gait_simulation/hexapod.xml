@@ -14,27 +14,134 @@
                   texuniform="true"/>
 
         <!-- STL components -->
-        <mesh name="hexapod_body" file="stl/hexapod_body_cutout.stl" scale="0.001 0.001 0.001"/>
-        <mesh name="hip_motor" file="stl/hexapod_motor_holder.stl" scale="0.001 0.001 0.001"/>
-        <mesh name="knee_motor" file="stl/knee_toscale.obj" scale="1 1 1"/>
+        <mesh name="hexapod_body" file="blender_obj/hexapod_wc.obj" scale="1 1 1"/>
+        <mesh name="hip1" file="blender_obj/hip1_wc.obj" scale="1 1 1"/>
+        <mesh name="knee1" file="blender_obj/knee1_wc.obj" scale="1 1 1"/>
+
+        <mesh name="hip2" file="blender_obj/hip2_wc.obj" scale="1 1 1"/>
+        <mesh name="knee2" file="blender_obj/knee2_wc.obj" scale="1 1 1"/>
+
+        <mesh name="hip3" file="blender_obj/hip3_wc.obj" scale="1 1 1"/>
+        <mesh name="knee3" file="blender_obj/knee3_wc.obj" scale="1 1 1"/>
+
+        <mesh name="hip4" file="blender_obj/hip4_wc.obj" scale="1 1 1"/>
+        <mesh name="knee4" file="blender_obj/knee4_wc.obj" scale="1 1 1"/>
+
+        <mesh name="hip5" file="blender_obj/hip5_wc.obj" scale="1 1 1"/>
+        <mesh name="knee5" file="blender_obj/knee5_wc.obj" scale="1 1 1"/>
+
+        <mesh name="hip6" file="blender_obj/hip6_wc.obj" scale="1 1 1"/>
+        <mesh name="knee6" file="blender_obj/knee6_wc.obj" scale="1 1 1"/>
     </asset>
 
     <worldbody>
         <light pos="0 0 2" dir="0 0 -1"/>
         <geom name="floor" type="plane" size="5 5 0.1" material="grid" rgba="0.8 0.8 0.8 1"/>
 
-        <body name="torso" pos="0 0 0.05">
+        <body name="torso">
             <geom type="mesh" mesh="hexapod_body"/>
             <freejoint/>
 
-            <body name="hip_motor" pos="0.018 0.018 0.01">
-                <geom type="mesh" mesh="hip_motor"/>
+            <!-- RIGHT SIDE -->
+
+            <!-- Red leg 1 -->
+            <body name="leg1">
+                <body name="hip1">
+                    <geom type="mesh" mesh="hip1" rgba="1 0 0 1"/>
+                </body>
+
+                <body name="knee1">
+                    <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <geom type="mesh" mesh="knee1" rgba="1 0 0 1"/>
+                </body>
             </body>
 
-            <body name="knee_motor" pos="0.018 0.018 0.01">
-                <geom type="mesh" mesh="knee_motor"/>
+            <!-- Green leg 2 -->
+            <body name="leg2">
+                <body name="hip2">
+                    <geom type="mesh" mesh="hip2" rgba="0 1 0 1"/>
+                </body>
+
+                <body name="knee2">
+                    <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <geom type="mesh" mesh="knee2" rgba="0 1 0 1"/>
+                </body>
             </body>
+
+            <!-- Blue leg 3 -->
+            <body name="leg3">
+                <body name="hip3">
+                <geom type="mesh" mesh="hip3" rgba="0 0 1 1"/>
+                </body>
+
+                <body name="knee3">
+                    <joint name="hip3_joint" pos="0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <geom type="mesh" mesh="knee3" rgba="0 0 1 1"/>
+                </body>
+            </body>
+
+            <!-- LEFT SIDE -->
+
+            <!-- Yellow leg 4 -->
+            <body name="leg4">
+                <body name="hip4">
+                <geom type="mesh" mesh="hip4" rgba="1 1 0 1"/>
+                </body>
+
+                <body name="knee4">
+                    <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <geom type="mesh" mesh="knee4" rgba="1 1 0 1"/>
+                </body>
+            </body>
+
+            <!-- Cyan leg 5 -->
+            <body name="leg5">
+                <body name="hip5">
+                <geom type="mesh" mesh="hip5" rgba="0 1 1 1"/>
+                </body>
+
+                <body name="knee5">
+                    <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <geom type="mesh" mesh="knee5" rgba="0 1 1 1"/>
+                </body>
+            </body>
+
+            <!-- Magenta leg 6 -->
+            <body name="leg6">
+                <body name="hip6">
+                <geom type="mesh" mesh="hip6" rgba="1 0 1 1"/>
+                </body>
+
+                <body name="knee6">
+                    <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <geom type="mesh" mesh="knee6" rgba="1 0 1 1"/>
+                </body>
+            </body>
+
         </body>
-
     </worldbody>
+
+    <actuator>
+        <!-- HIP MOVEMENT ACTUATION -->
+        <position name="hip1_act" joint="hip1_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip2_act" joint="hip2_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip3_act" joint="hip3_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip4_act" joint="hip4_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip5_act" joint="hip5_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip6_act" joint="hip6_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+
+    </actuator>
+
+    <!-- Not sure if needed but have it anyway -->
+    <contact>
+        <exclude body1="torso" body2="leg1"/>
+        <exclude body1="torso" body2="leg2"/>
+        <exclude body1="torso" body2="leg3"/>
+        <exclude body1="torso" body2="leg4"/>
+        <exclude body1="torso" body2="leg5"/>
+        <exclude body1="torso" body2="leg6"/>
+
+        <exclude body1="leg1" body2="leg2"/>
+        <exclude body1="leg2" body2="leg3"/>
+    </contact>
 </mujoco>

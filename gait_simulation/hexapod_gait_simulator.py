@@ -153,14 +153,30 @@ GAIT = wave_gait
 DIR = True 
 
 with mujoco.viewer.launch_passive(model, data) as viewer:
-    
+    t = 0
     while viewer.is_running():
-        # data.ctrl[:] = GAIT(data.time, DIR)
-        # mj.mj_step(model, data)
+        t += 0.01
+        
+        # Each leg gets a window of 2*pi to move, then stays at 0
+        cycle_length = 2 * np.pi
+        total_cycle = cycle_length * model.nu
+        t_mod = (t * 0.5) % total_cycle  # t * 2 controls overall speed
+
+        for i in range(model.nu):
+            leg_start = i * cycle_length
+            leg_end = leg_start + cycle_length
+            if leg_start <= t_mod < leg_end:
+                data.ctrl[i] = np.sin(t_mod - leg_start) * 0.78
+            else:
+                data.ctrl[i] = 0.0
+        
+        mujoco.mj_step(model, data)
         viewer.sync()
-        time.sleep(dt * SLOWDOWN)
+
+        
         
     
 
 # to run script: 
+
 # mjpython hexapod_gait_simulator.py
