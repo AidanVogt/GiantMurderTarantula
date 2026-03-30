@@ -13,25 +13,31 @@
         <material name="grid" texture="grid" texrepeat="5 5" 
                   texuniform="true"/>
 
-        <!-- STL components -->
+        <!-- OBJ components -->
         <mesh name="hexapod_body" file="blender_obj/hexapod_wc.obj" scale="1 1 1"/>
         <mesh name="hip1" file="blender_obj/hip1_wc.obj" scale="1 1 1"/>
         <mesh name="knee1" file="blender_obj/knee1_wc.obj" scale="1 1 1"/>
+        <mesh name="leg1" file="blender_obj/leg1_wc.obj" scale="1 1 1"/>
 
         <mesh name="hip2" file="blender_obj/hip2_wc.obj" scale="1 1 1"/>
         <mesh name="knee2" file="blender_obj/knee2_wc.obj" scale="1 1 1"/>
+        <mesh name="leg2" file="blender_obj/leg2_wc.obj" scale="1 1 1"/>
 
         <mesh name="hip3" file="blender_obj/hip3_wc.obj" scale="1 1 1"/>
         <mesh name="knee3" file="blender_obj/knee3_wc.obj" scale="1 1 1"/>
+        <mesh name="leg3" file="blender_obj/leg3_wc.obj" scale="1 1 1"/>
 
         <mesh name="hip4" file="blender_obj/hip4_wc.obj" scale="1 1 1"/>
         <mesh name="knee4" file="blender_obj/knee4_wc.obj" scale="1 1 1"/>
+        <mesh name="leg4" file="blender_obj/leg4_wc.obj" scale="1 1 1"/>
 
         <mesh name="hip5" file="blender_obj/hip5_wc.obj" scale="1 1 1"/>
         <mesh name="knee5" file="blender_obj/knee5_wc.obj" scale="1 1 1"/>
+        <mesh name="leg5" file="blender_obj/leg5_wc.obj" scale="1 1 1"/>
 
         <mesh name="hip6" file="blender_obj/hip6_wc.obj" scale="1 1 1"/>
         <mesh name="knee6" file="blender_obj/knee6_wc.obj" scale="1 1 1"/>
+        <mesh name="leg6" file="blender_obj/leg6_wc.obj" scale="1 1 1"/>
     </asset>
 
     <worldbody>
@@ -54,6 +60,10 @@
                     <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee1" rgba="1 0 0 1"/>
                 </body>
+
+                <body name="legpart1">
+                    <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
+                </body>
             </body>
 
             <!-- Green leg 2 -->
@@ -66,6 +76,10 @@
                     <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee2" rgba="0 1 0 1"/>
                 </body>
+
+                <body name="legpart2">
+                    <geom type="mesh" mesh="leg2" rgba="0 1 0 1"/>
+                </body>
             </body>
 
             <!-- Blue leg 3 -->
@@ -77,6 +91,10 @@
                 <body name="knee3">
                     <joint name="hip3_joint" pos="0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee3" rgba="0 0 1 1"/>
+                </body>
+
+                <body name="legpart3">
+                <geom type="mesh" mesh="leg3" rgba="0 0 1 1"/>
                 </body>
             </body>
 
@@ -92,6 +110,10 @@
                     <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee4" rgba="1 1 0 1"/>
                 </body>
+
+                <body name="legpart4">
+                <geom type="mesh" mesh="leg4" rgba="1 1 0 1"/>
+                </body>
             </body>
 
             <!-- Cyan leg 5 -->
@@ -104,6 +126,10 @@
                     <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee5" rgba="0 1 1 1"/>
                 </body>
+
+                <body name="legpart5">
+                <geom type="mesh" mesh="leg5" rgba="0 1 1 1"/>
+                </body>
             </body>
 
             <!-- Magenta leg 6 -->
@@ -115,6 +141,10 @@
                 <body name="knee6">
                     <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee6" rgba="1 0 1 1"/>
+                </body>
+
+                <body name="legpart6">
+                <geom type="mesh" mesh="leg6" rgba="1 0 1 1"/>
                 </body>
             </body>
 
