@@ -4,7 +4,7 @@ import numpy as np
 import time
 
 # load hexapod model from config
-model = mj.MjModel.from_xml_path("rudimentary_hexapod.xml")
+model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)
 
 GAIT_FREQ = 0.3   # Hz of the sine gait (lower = slower leg movement)
@@ -12,7 +12,7 @@ SLOWDOWN = 5.0   # real-time slowdown factor (1.0 = real-time, 5.0 = 5x slower)
 dt = model.opt.timestep  # 0.002 s per step (fromprev)
 
 # globals
-N_LEGS = 6
+N_LEGS = 0
 SWING_HEIGHT=0.4 # meters
 SWING_DURATION=2 # seconds
 STANCE_DURATION=1 #seconds
@@ -155,30 +155,12 @@ DIR = True
 with mujoco.viewer.launch_passive(model, data) as viewer:
     
     while viewer.is_running():
-        data.ctrl[:] = GAIT(data.time, DIR)
-        mj.mj_step(model, data)
+        # data.ctrl[:] = GAIT(data.time, DIR)
+        # mj.mj_step(model, data)
         viewer.sync()
         time.sleep(dt * SLOWDOWN)
         
-        
-def ctrl_callback(model, data):
-    t = data.time
-    stride = np.array([0.06, 0.0])   # walking straight, 6 cm stride
-
-    cmds = gait_commands(
-        t             = t,
-        swing_period  = 0.3,
-        stance_period = 0.9,
-        phase_matrix  = WAVE_GAIT,
-        stride_vector = stride,
-    )
-
-    for cmd in cmds:
-        q = inverse_kinematics(cmd['foot_pos'], leg_index=cmd['leg'])
-        leg_joint_slice = slice(cmd['leg'] * 3, cmd['leg'] * 3 + 3)
-        data.ctrl[leg_joint_slice] = q
-
-mujoco.set_mjcb_control(ctrl_callback)
+    
 
 # to run script: 
 # mjpython hexapod_gait_simulator.py
