@@ -1,6 +1,7 @@
 #include <ModbusMaster.h>
 #include <SimpleFOC.h>
 #include <SoftwareSerial.h>
+#include <Wire.h>
 
 #define MAX485_DE      8
 #define MAX485_RE_NEG  9
@@ -17,12 +18,25 @@
 
 #define PRINT_INTERVAL 250
 
+// I2C LEG ADDRESS
+#define INO_ADDRESS 0x10
+
+// match python
+struct Instruction {
+  int instr_type;
+  int phase;
+};
+
+Instruction received;
+
 HallSensor encoder = HallSensor(HALL_A, HALL_B, HALL_C, 5);
 SoftwareSerial RS485_serial (RX_RS485, TX_RS485);
 ModbusMaster node;
 
 bool forward = true;
 unsigned int last_print = 0;
+
+//////////////// MOTOR MOVEMENT FUNCS ////////////////
 
 void preTransmission()
 {
@@ -103,8 +117,40 @@ void move_backward() {
   non_braking_stop();
 }
 
+////////////////// I2C PARSING ////////////////
+void getInstruction(int numBytes) {
+  if (numBytes >= 2) {
+    received.instr_type = Wire.read();
+    received.phase = Wire.read();
+
+    Serial.print("instr_type: ");
+    Serial.println(received.instr_type);
+    Serial.print("phase: ");
+    Serial.println(received.phase);
+
+    if (instr_type == 0x01) {
+      move_forward()
+    }
+
+    if (instr_type == 0x02) {
+      move_backward()
+    }
+  }
+}
+
+
+void sendData() {
+  Wire.write("Hello Pi");
+}
+
+////////////////// SETUP AND LOOP //////////////////
 void setup()
 {
+  // I2C
+  Wire.begin(INO_ADDRESS);
+  Wire.onReceive(getInstruction);
+  // Wire.onRequest(sendData);
+
   pinMode(MAX485_RE_NEG, OUTPUT);
   pinMode(MAX485_DE, OUTPUT);
 

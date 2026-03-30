@@ -4,9 +4,6 @@ import smbus2
 # Gait planning done at highest level
 # Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
     # map cycles to actions (have an action CLASS)
-# blocker to read input - want to wait until we have processed the full movement before
-# getting next input
-
 
 class Instruction:
     def __init__(self, instr_type, phase):

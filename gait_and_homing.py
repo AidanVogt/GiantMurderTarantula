@@ -106,6 +106,36 @@ def moveCwOneCycle(bus: I2CBus):
 def moveCCwOneCycle(bus: I2CBus):
     pass
 
+
+def testI2CJoystick(x: int, y:int , bus: I2CBus):
+    
+    # fwd - 0x01, back 0x02
+    test_fwd = Instruction(FORWARD, LEG_UP)
+    test_back = Instruction(BACK, LEG_DOWN)
+    
+    if x == 1:
+        print("Clockwise")
+        for _, device in bus.devices:
+            device.sendData(test_fwd)
+    
+    elif x == -1:
+        print("Counterclockwise")
+        for device in bus.devices:
+            device.sendData(test_back)
+    
+    elif y==1:
+        print("Forward")
+        for device in bus.devices:
+            device.sendData(test_fwd)
+        
+    elif y == -1:
+        print("Back")
+        for device in bus.devices:
+            device.sendData(test_back)
+
 # homing a single leg
 def homeSingleLeg():
     home_instr = Instruction(0x00, -1)
+    
+    
+    
