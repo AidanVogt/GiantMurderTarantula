@@ -91,11 +91,13 @@
                 <body name="knee3">
                     <joint name="hip3_joint" pos="0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee3" rgba="0 0 1 1"/>
+
+                    <body name="legpart3">
+                        <geom type="mesh" mesh="leg3" rgba="0 0 1 1"/>
+                    </body>
                 </body>
 
-                <body name="legpart3">
-                <geom type="mesh" mesh="leg3" rgba="0 0 1 1"/>
-                </body>
+
             </body>
 
             <!-- LEFT SIDE -->
@@ -109,10 +111,10 @@
                 <body name="knee4">
                     <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee4" rgba="1 1 0 1"/>
-                </body>
 
-                <body name="legpart4">
-                <geom type="mesh" mesh="leg4" rgba="1 1 0 1"/>
+                    <body name="legpart4">
+                        <geom type="mesh" mesh="leg4" rgba="1 1 0 1"/>
+                    </body>
                 </body>
             </body>
 
@@ -125,10 +127,10 @@
                 <body name="knee5">
                     <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee5" rgba="0 1 1 1"/>
-                </body>
 
-                <body name="legpart5">
-                <geom type="mesh" mesh="leg5" rgba="0 1 1 1"/>
+                    <body name="legpart5">
+                        <geom type="mesh" mesh="leg5" rgba="0 1 1 1"/>
+                    </body>
                 </body>
             </body>
 
@@ -141,11 +143,14 @@
                 <body name="knee6">
                     <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee6" rgba="1 0 1 1"/>
+
+
+                    <body name="legpart6">
+                        <geom type="mesh" mesh="leg6" rgba="1 0 1 1"/>
+                    </body>
                 </body>
 
-                <body name="legpart6">
-                <geom type="mesh" mesh="leg6" rgba="1 0 1 1"/>
-                </body>
+
             </body>
 
         </body>
@@ -170,8 +175,8 @@
         <exclude body1="torso" body2="leg4"/>
         <exclude body1="torso" body2="leg5"/>
         <exclude body1="torso" body2="leg6"/>
-
+<!-- 
         <exclude body1="leg1" body2="leg2"/>
-        <exclude body1="leg2" body2="leg3"/>
+        <exclude body1="leg2" body2="leg3"/> -->
     </contact>
 </mujoco>

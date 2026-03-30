@@ -45,7 +45,7 @@ def joystickLoop():
             # convert x and y signal to gait
             testI2CJoystick(x, y, bus)
 
-        time.sleep(0.05)
+        time.sleep(5)
         
 joystickLoop()
 
