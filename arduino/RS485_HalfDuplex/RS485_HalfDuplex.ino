@@ -36,6 +36,8 @@ ModbusMaster node;
 bool forward = true;
 unsigned int last_print = 0;
 
+int doing_thing = 0;
+
 //////////////// MOTOR MOVEMENT FUNCS ////////////////
 
 void preTransmission()
@@ -119,21 +121,12 @@ void move_backward() {
 
 ////////////////// I2C PARSING ////////////////
 void getInstruction(int numBytes) {
-  if (numBytes >= 2) {
-    received.instr_type = Wire.read();
-    received.phase = Wire.read();
-
-    Serial.print("instr_type: ");
-    Serial.println(received.instr_type);
-    Serial.print("phase: ");
-    Serial.println(received.phase);
-
-    if (instr_type == 0x01) {
-      move_forward()
-    }
-
-    if (instr_type == 0x02) {
-      move_backward()
+  while (Wire.available()) {
+    char c = Wire.read();
+    if (c == 0) {
+      doing_thing = 1;
+    } else if(c == 1) {
+      doing_thing = 2;
     }
   }
 }
@@ -182,12 +175,11 @@ int direction = 0;
 void loop()
 {
   encoder.update();
-  if (Serial.available() > 0) {
-    char data = Serial.read();
-    if        (data == 'f') {
-      move_forward();
-    } else if (data == 'b') {
-      move_backward();
-    }
+  if (doing_thing == 1) {
+    doing_thing = 0;
+    move_forward();
+  } else if (doing_thing == 2) {
+    doing_thing = 0;
+    move_backward();
   }
 }
