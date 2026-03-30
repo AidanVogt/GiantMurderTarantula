@@ -120,17 +120,17 @@ def testI2CJoystick(x: int, y:int , bus: I2CBus):
     
     elif x == -1:
         print("Counterclockwise")
-        for device in bus.devices:
+        for _, device in bus.devices:
             device.sendData(test_back)
     
     elif y==1:
         print("Forward")
-        for device in bus.devices:
+        for _, device in bus.devices:
             device.sendData(test_fwd)
         
     elif y == -1:
         print("Back")
-        for device in bus.devices:
+        for _, device in bus.devices:
             device.sendData(test_back)
 
 # homing a single leg
