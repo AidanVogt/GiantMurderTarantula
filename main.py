@@ -22,6 +22,7 @@ bus.addDevices(leg1)
 # bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
 # print([d.name for d in bus.devices])
 print([d for d in bus.devices.keys()])
+print(bus.devices)
 print(leg1.bus)
 
 # set motors as idle
