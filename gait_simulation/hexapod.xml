@@ -59,11 +59,13 @@
                 <body name="knee1">
                     <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee1" rgba="1 0 0 1"/>
+
+                    <body name="legpart1">
+                        <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
+                    </body>
                 </body>
 
-                <body name="legpart1">
-                    <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
-                </body>
+
             </body>
 
             <!-- Green leg 2 -->
@@ -75,11 +77,13 @@
                 <body name="knee2">
                     <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
                     <geom type="mesh" mesh="knee2" rgba="0 1 0 1"/>
+
+                    <body name="legpart2">
+                        <geom type="mesh" mesh="leg2" rgba="0 1 0 1"/>
+                    </body>
                 </body>
 
-                <body name="legpart2">
-                    <geom type="mesh" mesh="leg2" rgba="0 1 0 1"/>
-                </body>
+
             </body>
 
             <!-- Blue leg 3 -->
@@ -175,8 +179,12 @@
         <exclude body1="torso" body2="leg4"/>
         <exclude body1="torso" body2="leg5"/>
         <exclude body1="torso" body2="leg6"/>
-<!-- 
+
         <exclude body1="leg1" body2="leg2"/>
-        <exclude body1="leg2" body2="leg3"/> -->
+        <exclude body1="leg2" body2="leg3"/>
+        <exclude body1="leg2" body2="leg3"/>
+        <exclude body1="leg4" body2="leg5"/>
+        <exclude body1="leg5" body2="leg6"/>
+
     </contact>
 </mujoco>
