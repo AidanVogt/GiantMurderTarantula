@@ -4,6 +4,8 @@ import smbus2
 # Gait planning done at highest level
 # Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
     # map cycles to actions (have an action CLASS)
+    
+register = 0x09
 
 class Instruction:
     def __init__(self, instr_type, phase):
@@ -58,13 +60,13 @@ class GMTIno:
         self.name = name
         self.bus = None
         
-    def sendData(self, register, data):
+    def sendData(self, data):
         # data should be of type Instruction
         
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        self.bus.bus.write_i2c_block_data(self.address, register, data)
+        self.bus.bus.write_i2c_block_data(self.address, data)
         
     def readI2C(self):
         if self.bus is None:
