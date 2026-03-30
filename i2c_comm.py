@@ -14,6 +14,10 @@ class Instruction:
         
         # phase: -1 = No movement, 0 = leg up, 1 = leg down, 2 = hip forward, 3 = hip back, 4 = groudned hip forward, 5 = grounded hip back
         self.phase = phase
+    
+    def to_bytes(self):
+        return [self.instr_type, self.phase]
+    
 
 
 class I2CBus:
@@ -66,7 +70,7 @@ class GMTIno:
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        self.bus.bus.write_i2c_block_data(self.address, register, data=data)
+        self.bus.bus.write_i2c_block_data(self.address, register, data=data.to_bytes())
         
     def readI2C(self):
         if self.bus is None:
