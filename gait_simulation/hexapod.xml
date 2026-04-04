@@ -51,17 +51,17 @@
             <!-- RIGHT SIDE -->
 
             <!-- Red leg 1 -->
-            <body name="leg1" euler="0 0 0">
+            <body name="leg1">
                 <body name="hip1">
                     <geom type="mesh" mesh="hip1" rgba="1 0 0 1"/>
                 </body>
 
                 <body name="knee1">
-                    <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45" ref="0"/>
                     <geom type="mesh" mesh="knee1" rgba="1 0 0 1"/>
 
                     <body name="legpart1">
-                        <joint name="knee1_joint" pos="0.32 0.18 0.6" axis="0 1 0" type="hinge" range="-45 45"/>
+                        <joint name="knee1_joint" pos="0.32 0.18 0.6" axis="0 1 0" type="hinge" range="-45 45" ref="0"/>
                         <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
                     </body>
                 </body>

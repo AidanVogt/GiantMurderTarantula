@@ -3,21 +3,37 @@ import smbus2
 # Sending instructions from the pi to the arduinos
 # Gait planning done at highest level
 # Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
-    # map cycles to actions (have an action CLASS)
-    
-register = 0x09
 
 class Instruction:
-    def __init__(self, instr_type, phase):
-        # instr types: 0x00 = home, 0x01 = fwd, 0x02 = back, 0x03 = cw, 0x04 - ccw
-        self.instr_type = instr_type
+    def __init__(self, bus, leg1_inst = None, leg2_inst = None, leg3_inst=None, leg4_inst=None, leg5_inst=None, leg6_inst=None):
         
-        # phase: -1 = No movement, 0 = leg up, 1 = leg down, 2 = hip forward, 3 = hip back, 4 = groudned hip forward, 5 = grounded hip back
-        self.phase = phase
-    
-    def to_bytes(self):
-        return [self.instr_type, self.phase]
-    
+        # single byte defines instructions
+        self.bus = bus
+        self.instructions = [leg1_inst, leg2_inst, leg3_inst, leg4_inst, leg5_inst, leg6_inst]
+
+        
+    def sendToLegs(self):
+        
+        # names of the legs (match the order of instructions)
+        legs = self.bus.devices.keys()
+        num = 0
+        
+        # send each to legs if not none
+        for inst in self.instructions:
+            self.bus.devices[legs[num]].sendData(inst)
+            num += 1
+            
+    def checkFinished(self):
+        
+        num_finished = 0
+        
+        while num_finished < 6:
+            
+            finished_devices = self.bus.pollArduinos()
+            num_finished += finished_devices
+        
+        print("All devices finished")
+        return
 
 
 class I2CBus:
@@ -35,27 +51,26 @@ class I2CBus:
 
     def pollArduinos(self):
         # poll all arduinos on the bus to check their status
-        # arduinos can send a true/false determining whether or not they are complete with one cycle of movement
-        # ino sends either 0 or 1 (0 meaning still moving)
+        # arduinos can send a true/false determining whether or not they complete instruction
+        # each ino sends 1 (if the instruction is finished)
         
-        finished_movement = True
+        finished_devices = 0
         
-        # TODO update iter
-        for device in self.devices:
+        for device in self.devices.values():
 
             try:
-                response = self.bus.read_byte(device.address)  # read 1 byte from arduino
-                if response != 1:
-                    finished_movement = False
-                    return finished_movement
-            
+                response = device.readI2C()
+                
+                if response == 0x01:
+                    finished_devices += 1
+                    print(f"{device.name} address {device.address} finished")
+                
             # check for issues with connectivity
             except OSError as e:
                 print(f"Failed to poll device {hex(device.address)}: {e}")
-                finished_movement = False
-                break
+                # break
     
-        return finished_movement
+        return finished_devices
     
 class GMTIno:
     def __init__(self, name, address):
@@ -65,16 +80,17 @@ class GMTIno:
         self.bus = None
         
     def sendData(self, data):
-        # data should be of type Instruction
+        print(f"Sending data to Arduino {self.name} address: {hex(self.address)}")
         
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        self.bus.bus.write_i2c_block_data(self.address, register, data=data.to_bytes())
+        self.bus.write_byte(self.address, data)
         
     def readI2C(self):
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        return self.bus.bus.read_i2c_block_data(self.address, 0, 8)
+        return self.bus.read_byte(self.address)
+        
     
