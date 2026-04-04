@@ -1,4 +1,4 @@
-from gait_and_homing import completeOneMovementCycle, testI2CJoystick
+from gait_and_homing import testI2CJoystick
 from i2c_comm import I2CBus, GMTIno
 from joystick import GMTJoystick
 import time

@@ -1,58 +1,43 @@
 from i2c_comm import I2CBus, Instruction
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT
 import time
 
 # simpler method
 # Decompose gait into instructions, modify code to send a single byte
 
-# determine which movement cycle to conduct based on x and y from dpad
-def completeOneMovementCycle(x: int, y:int , bus: I2CBus):
+def MoveLegs(bus: I2CBus, inst):
+    """Send commands to multiple legs in bus, waits until completion"""
     
-    if x == 1:
-        print("Clockwise")
-
-    
-    elif x == -1:
-        print("Counterclockwise")
-
-    
-    elif y==1:
-        print("Forward")
-
-        
-    elif y == -1:
-        print("Back")
-
-
-def moveLeg(inst, bus: I2CBus):
     fwd = Instruction(bus, inst)
     fwd.sendToLegs()
     fwd.checkFinished()
 
+# determine which movement cycle to conduct based on x and y from dpad
+def CompleteOneMovementCycle(gait_type, bus: I2CBus):
+    
+    # gait type is a list of tuples (len 6) specifying instructions
+    for inst in gait_type:
+        MoveLegs(bus, inst)
 
-def testI2CJoystick(x: int, y:int , bus: I2CBus):
+def TestI2CJoystick(x: int, y:int, bus: I2CBus):
     
     if x == 1:
-        print("Clockwise")
-        instr = 0 # TODO
-        moveLeg(instr, bus)
+        print("Turn right")
+        CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     
     elif x == -1:
-        print("Counterclockwise")
-        for device in bus.devices.values():
-            instr = 0 # TODO
-            moveLeg(instr, bus)
-    
+        print("Turn Left")
+        CompleteOneMovementCycle(gaits[GAIT_TURN_LEFT], bus)
+
+
     elif y==1:
         print("Forward")
-        for device in bus.devices.values():
-            instr = 0 # TODO
-            moveLeg(instr, bus)
+        CompleteOneMovementCycle(gaits[GAIT_FORWARD], bus)
+
         
     elif y == -1:
         print("Back")
-        for device in bus.devices.values():
-            instr = 0 # TODO
-            moveLeg(instr, bus)
+        CompleteOneMovementCycle(gaits[GAIT_BACKWARD], bus)
 
 
     

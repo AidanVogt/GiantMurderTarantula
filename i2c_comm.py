@@ -1,15 +1,17 @@
 import smbus2
+from typing import Tuple
+from gaits import ACTION_NONE
 
 # Sending instructions from the pi to the arduinos
 # Gait planning done at highest level
 # Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
 
 class Instruction:
-    def __init__(self, bus, leg1_inst = None, leg2_inst = None, leg3_inst=None, leg4_inst=None, leg5_inst=None, leg6_inst=None):
+    def __init__(self, bus, instructions = Tuple[int, int, int, int, int, int]):
         
         # single byte defines instructions
         self.bus = bus
-        self.instructions = [leg1_inst, leg2_inst, leg3_inst, leg4_inst, leg5_inst, leg6_inst]
+        self.instructions = instructions
 
         
     def sendToLegs(self):
@@ -20,6 +22,7 @@ class Instruction:
         
         # send each to legs if not none
         for inst in self.instructions:
+    
             self.bus.devices[legs[num]].sendData(inst)
             num += 1
             
