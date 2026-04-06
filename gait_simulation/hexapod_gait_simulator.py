@@ -43,32 +43,32 @@ HIP_PER = 10
 
 # LEG 1
 HIPN = 0
-HIP1_swing = 200 # amount to move from baseline
+HIP1_swing = 20 # amount to move from baseline
 HIP1_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 2
 HIP2 = 0
-HIP2_swing = 50 # amount to move from baseline
+HIP2_swing = 20 # amount to move from baseline
 HIP2_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 3
 HIP3 = 0
-HIP3_swing = 2000 # amount to move from baseline
+HIP3_swing = 20 # amount to move from baseline
 HIP3_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 4
 HIP4 = 0
-HIP4_swing = 100 # amount to move from baseline
+HIP4_swing = 20 # amount to move from baseline
 HIP4_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 5
 HIP5 = 0
-HIP5_swing = 50 # amount to move from baseline
+HIP5_swing = 20 # amount to move from baseline
 HIP5_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 6
 HIP6 = 0
-HIP6_swing = 50 # amount to move from baseline
+HIP6_swing = 20 # amount to move from baseline
 HIP6_per = 10.0 # seconds — time for one full up-down cycle
 
 # actuators

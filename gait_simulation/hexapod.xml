@@ -50,9 +50,9 @@
             <!-- <freejoint/> -->
 
             <!-- TRY THIS - body is supported by a central beam, control its movement as such -->
-            <!-- <joint name="torso_x" type="slide" axis="1 0 0"/>
+            <joint name="torso_x" type="slide" axis="1 0 0"/>
             <joint name="torso_y" type="slide" axis="0 1 0"/>
-            <joint name="torso_yaw" type="hinge" axis="0 0 1"/> -->
+            <joint name="torso_yaw" type="hinge" axis="0 0 1"/>
 
             <!-- RIGHT SIDE -->
             
