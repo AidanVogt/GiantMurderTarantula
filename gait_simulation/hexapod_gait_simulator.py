@@ -39,10 +39,11 @@ LEG_UP = 150 # amount to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 HIPN = 0
+HIP_PER = 10
 
 # LEG 1
 HIPN = 0
-HIP1_swing = 50 # amount to move from baseline
+HIP1_swing = 200 # amount to move from baseline
 HIP1_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 2
@@ -66,9 +67,28 @@ HIP5_swing = 50 # amount to move from baseline
 HIP5_per = 10.0 # seconds — time for one full up-down cycle
 
 # LEG 6
-HIP4 = 0
-hip_swing = 100 # amount to move from baseline
-hip_per = 10.0 # seconds — time for one full up-down cycle
+HIP6 = 0
+HIP6_swing = 50 # amount to move from baseline
+HIP6_per = 10.0 # seconds — time for one full up-down cycle
+
+# actuators
+leg1_knee_id = act("knee1_act")
+hip1_id = act("hip1_act")
+
+leg2_knee_id = act("knee2_act")
+hip2_id = act("hip2_act")
+
+leg3_knee_id = act("knee3_act")
+hip3_id = act("hip3_act")
+
+leg4_knee_id = act("knee4_act")
+hip4_id = act("hip4_act")
+
+leg5_knee_id = act("knee5_act")
+hip5_id = act("hip5_act")
+
+leg6_knee_id = act("knee6_act")
+hip6_id = act("hip6_act")
 
 # =============================================================================
 # Run MuJoCo viewer
@@ -77,13 +97,6 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     phase_start = time.time()
 
     # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
-    leg1_knee_id = act("knee6_act")
-    hip1_id = act("hip6_act")
-
-    
-    leg_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "legpart1")
-    leg2_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "legpart2")
-    print(leg_id)
 
     # Set the mass
     # model.body_mass[leg_id] = MASS
@@ -91,24 +104,58 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     # print(model.body_mass)
     
     # print(model.body_mass)
+    
+    order_move = []
+    start = 1
 
     
     while viewer.is_running():
         elapsed = time.time() - phase_start
-
-        # right side
-        # knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
-        hip_target = HIPN + hip_swing * .5 * (np.sin(2*np.pi*elapsed/hip_per))
         
-        # left side
-        knee_target = (0 + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1))*-1
+        if elapsed >= (PERIOD*2):
+            phase_start = time.time()
+            elapsed = 0
+            start = (start % 6) + 1  # cycles 1→2→3→4→5→6→1
         
-        print("range:", model.actuator_ctrlrange[leg1_knee_id])
-        print("ctrl:", data.ctrl[leg1_knee_id])
-        print("force:", data.actuator_force[leg1_knee_id])
+        if start == 1:
+            swing = HIP1_swing
+            leg_id = leg1_knee_id
+            hip_id = hip1_id
+            
+        elif start == 2:
+            swing = HIP2_swing
+            leg_id = leg2_knee_id
+            hip_id = hip2_id
+            
+        elif start == 3:
+            swing = HIP3_swing
+            leg_id = leg3_knee_id
+            hip_id = hip3_id
+            
+        elif start == 4:
+            swing = HIP4_swing
+            leg_id = leg4_knee_id
+            hip_id = hip4_id
+            
+        elif start == 5:
+            swing = HIP5_swing
+            leg_id = leg5_knee_id
+            hip_id = hip5_id
+            
+        elif start == 6:
+            swing = HIP6_swing
+            leg_id = leg6_knee_id
+            hip_id = hip6_id
 
-        data.ctrl[leg1_knee_id] = knee_target
-        data.ctrl[hip1_id] = hip_target
+        # right side, left side same except multiply by -1
+        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
+        
+        if start == 4 or start == 5 or start == 6:
+            knee_target *= -1
+    
+        data.ctrl[leg_id] = knee_target
+        data.ctrl[hip_id] = hip_target
 
         mj.mj_step(model, data)
         viewer.sync()
@@ -117,3 +164,8 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
 
 # to run script: 
 # mjpython hexapod_gait_simulator.py
+
+
+# print("range:", model.actuator_ctrlrange[leg1_knee_id])
+# print("ctrl:", data.ctrl[leg1_knee_id])
+# print("force:", data.actuator_force[leg1_knee_id])
