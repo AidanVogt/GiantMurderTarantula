@@ -30,16 +30,44 @@ tripod_group2 = [
 
 
 # testing
-# NEUTRAL = 95.0
-# LEG_UP = 20.0 # degrees to move from baseline
-# PERIOD = 5.0 # seconds — time for one full up-down cycle
 
+MASS = 0
+
+# upward leg movement
 NEUTRAL = 0
 LEG_UP = 150 # amount to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 HIPN = 0
-hip_swing = 600 # amount to move from baseline
+
+# LEG 1
+HIPN = 0
+HIP1_swing = 50 # amount to move from baseline
+HIP1_per = 10.0 # seconds — time for one full up-down cycle
+
+# LEG 2
+HIP2 = 0
+HIP2_swing = 50 # amount to move from baseline
+HIP2_per = 10.0 # seconds — time for one full up-down cycle
+
+# LEG 3
+HIP3 = 0
+HIP3_swing = 2000 # amount to move from baseline
+HIP3_per = 10.0 # seconds — time for one full up-down cycle
+
+# LEG 4
+HIP4 = 0
+HIP4_swing = 100 # amount to move from baseline
+HIP4_per = 10.0 # seconds — time for one full up-down cycle
+
+# LEG 5
+HIP5 = 0
+HIP5_swing = 50 # amount to move from baseline
+HIP5_per = 10.0 # seconds — time for one full up-down cycle
+
+# LEG 6
+HIP4 = 0
+hip_swing = 100 # amount to move from baseline
 hip_per = 10.0 # seconds — time for one full up-down cycle
 
 # =============================================================================
@@ -49,30 +77,33 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     phase_start = time.time()
 
     # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
-    leg1_knee_id = act("knee1_act")
-    hip1_id = act("hip1_act")
+    leg1_knee_id = act("knee6_act")
+    hip1_id = act("hip6_act")
 
     
     leg_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "legpart1")
+    leg2_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "legpart2")
     print(leg_id)
 
     # Set the mass
-    model.body_mass[leg_id] = 0
-    print(model.body_mass)
+    # model.body_mass[leg_id] = MASS
+    # model.body_mass[leg2_id] = MASS
+    # print(model.body_mass)
     
-    print(model.body_mass)
+    # print(model.body_mass)
 
     
     while viewer.is_running():
         elapsed = time.time() - phase_start
 
-        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        # right side
+        # knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
         hip_target = HIPN + hip_swing * .5 * (np.sin(2*np.pi*elapsed/hip_per))
         
+        # left side
+        knee_target = (0 + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1))*-1
+        
         print("range:", model.actuator_ctrlrange[leg1_knee_id])
-        print("qpos:", data.qpos[model.jnt_qposadr[
-            mj.mj_name2id(model, mj.mjtObj.mjOBJ_JOINT, "knee1_joint")
-        ]])
         print("ctrl:", data.ctrl[leg1_knee_id])
         print("force:", data.actuator_force[leg1_knee_id])
 
