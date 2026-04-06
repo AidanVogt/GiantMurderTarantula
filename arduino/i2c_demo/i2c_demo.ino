@@ -29,5 +29,7 @@ void getInstruction(int numBytes) {
     unsigned char c  = Wire.read();
     Serial.println(c);
 
+    Wire.write(1)
+
   }
 }

@@ -80,6 +80,9 @@ class I2CBus:
     
     def WriteByte(self, address, data):
         self.bus.write_byte(address, data)
+        
+    def ReadByte(self, address):
+        self.bus.read_byte(address)
     
 class GMTIno:
     def __init__(self, name, address):
@@ -100,6 +103,6 @@ class GMTIno:
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        return self.bus.read_byte(self.address)
+        return self.bus.ReadByte(self.address)
         
     
