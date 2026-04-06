@@ -18,11 +18,12 @@ class Instruction:
         
         # names of the legs (match the order of instructions)
         legs = sorted(self.bus.devices.keys())
+        print(len(legs))
         num = 0
 	
         # send each to legs if not none
         for inst in self.instructions:
-    
+            print(num)
             self.bus.devices[legs[num]].sendData(inst)
             num += 1
             
