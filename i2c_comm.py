@@ -33,11 +33,13 @@ class Instruction:
         print("Checking if done")
         
         num_finished = 0
+        finished_devices = self.bus.pollArduinos()
+        print(finished_devices)
         
-        while num_finished < len(self.bus.devices.keys()):
+        # while num_finished < len(self.bus.devices.keys()):
             
-            finished_devices = self.bus.pollArduinos()
-            num_finished += finished_devices
+        #     finished_devices = self.bus.pollArduinos()
+        #     num_finished += finished_devices
         
         print("All devices finished")
 
@@ -64,7 +66,7 @@ class I2CBus:
         finished_devices = 0
         
         for device in self.devices.values():
-
+            print(device)
             try:
                 response = device.readI2C()
                 print(response, "response")
