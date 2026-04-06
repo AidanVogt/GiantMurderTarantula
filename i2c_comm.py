@@ -66,7 +66,7 @@ class I2CBus:
         finished_devices = 0
         
         for device in self.devices.values():
-            print(device)
+
             try:
                 response = device.readI2C()
                 print(response, "response")
@@ -107,6 +107,7 @@ class GMTIno:
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
+        print("READING FROM address", self.address)
         return self.bus.ReadByte(self.address)
         
     
