@@ -4,179 +4,168 @@ import numpy as np
 import time
 
 # load hexapod model from config
+# model = mj.MjModel.from_xml_path("hexapod.xml")
 model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)
 
-GAIT_FREQ = 0.3   # Hz of the sine gait (lower = slower leg movement)
-SLOWDOWN = 5.0   # real-time slowdown factor (1.0 = real-time, 5.0 = 5x slower)
-dt = model.opt.timestep  # 0.002 s per step (fromprev)
+# XML REF
+# Actuators 
+# 0-5: hip1, hip2, hip3, hip4, hip5, hip6
+# 6-11: knee1, knee2, knee3, knee4, knee5, knee6
 
-# globals
-N_LEGS = 0
-SWING_HEIGHT=0.4 # meters
-SWING_DURATION=2 # seconds
-STANCE_DURATION=1 #seconds
+def act(name):
+    return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
 
- 
-# Nominal foot rest positions in body frame (x, y, z), shape [6, 3] TODO adjust if needed
-LEG_OFFSETS = np.array([
-    [ 0.15,  0.10, -0.12],  # L1 front-left
-    [ 0.00,  0.12, -0.12],  # L2 mid-left
-    [-0.15,  0.10, -0.12],  # L3 rear-left
-    [ 0.15, -0.10, -0.12],  # R1 front-right
-    [ 0.00, -0.12, -0.12],  # R2 mid-right
-    [-0.15, -0.10, -0.12],  # R3 rear-right
-])
- 
-# phase matrices (L1, L2, L3, L4, L5, L6)
-TRIPOD_GAIT = np.array([
-    0, np.pi, 0,
-    np.pi, 0, np.pi,
-])
+# specify which legs move in tandem
+tripod_group1 = [
+    (act("hip1_act"), act("knee1_act")), # front right
+    (act("hip3_act"), act("knee3_act")), # back right
+    (act("hip5_act"), act("knee5_act")), # middle left
+]
+tripod_group2 = [
+    (act("hip2_act"), act("knee2_act")),   # front left
+    (act("hip4_act"), act("knee4_act")),   # mid right
+    (act("hip6_act"), act("knee6_act")),   # back left
+]
 
-# RIPPLE_GAIT = np.array([
-#     0, 2*np.pi/3, 4*np.pi/3,
-#     np.pi/3, np.pi, 5*np.pi/3,
-# ])
 
-# # TODO fix tripod gait funcs
+# testing
 
-def tripod_gait_rotation(t, cw = True):
-    
-    ctrl = np.zeros(12)
-    
-    pass
+MASS = 0
 
-def ripple_gait(t, forward=True):
-    """Forward and backward RIPPLE gait""" 
-    
-    
+# upward leg movement
+NEUTRAL = 0
+LEG_UP = 150 # amount to move from baseline
+PERIOD = 5.0 # seconds — time for one full up-down cycle
 
-    pass
- 
-def wave_gait(t, forward=True):
-    """Forward and backward wave gait"""
-    
-    ctrl = np.zeros(12)
-    
-    if not forward:
-        for i in range(N_LEGS):
-            phase = (2*np.pi * i) / N_LEGS
-            ctrl[2*i]   = -0.4 * np.sin(2*np.pi*GAIT_FREQ*t + phase)            # hip reversed
-            ctrl[2*i+1] = -0.5 * np.clip(np.sin(2*np.pi*GAIT_FREQ*t + phase), 0, 1)
-    
-    else:
-        for i in range(N_LEGS):
-            phase = (2*np.pi * i) / N_LEGS
-            ctrl[2*i] = 0.4 * np.sin(2*np.pi*GAIT_FREQ*t + phase) # fwd
-            ctrl[2*i+1] = -0.5 * np.clip(np.sin(2*np.pi*GAIT_FREQ*t + phase), 0, 1) # lift
+HIPN = 0
+HIP_PER = 10
 
-    return ctrl
-    
+# LEG 1
+HIPN = 0
+HIP1_swing = 20 # amount to move from baseline
+HIP1_per = 10.0 # seconds — time for one full up-down cycle
 
-# try this.....
-def gait_commands(
-    t: float,
-    swing_period: float,
-    stance_period: float,
-    phase_matrix: np.ndarray,        # shape [6]
-    stride_vector: np.ndarray,       # (dx, dy) in body frame per full cycle
-    body_height: float = 0.18,
-) -> list[dict]:
-    """
-    Returns one command dict per leg for the current timestep t.
+# LEG 2
+HIP2 = 0
+HIP2_swing = 20 # amount to move from baseline
+HIP2_per = 10.0 # seconds — time for one full up-down cycle
 
-    Each command:
-        {
-          'leg':        int,         # 0–5
-          'mode':       'swing' | 'stance',
-          'foot_pos':   np.ndarray,  # target (x, y, z) in body frame
-          'phase':      float,       # current phase θᵢ(t) in [0, 2π)
-        }
-    """
-    T          = swing_period + stance_period
-    omega      = 2 * np.pi / T
-    theta_sw   = 2 * np.pi * swing_period / T   # swing window boundary
+# LEG 3
+HIP3 = 0
+HIP3_swing = 20 # amount to move from baseline
+HIP3_per = 10.0 # seconds — time for one full up-down cycle
 
-    commands = []
-    for i in range(6):
-        phase = (omega * t + phase_matrix[i]) % (2 * np.pi)
-        rest  = LEG_OFFSETS[i].copy()
-        rest[2] -= (body_height - 0.12)         # adjust for commanded height
+# LEG 4
+HIP4 = 0
+HIP4_swing = 20 # amount to move from baseline
+HIP4_per = 10.0 # seconds — time for one full up-down cycle
 
-        if phase < theta_sw:
-            # ── SWING ──────────────────────────────────────────────────────
-            # normalised progress through swing: 0 → 1
-            s = phase / theta_sw
+# LEG 5
+HIP5 = 0
+HIP5_swing = 20 # amount to move from baseline
+HIP5_per = 10.0 # seconds — time for one full up-down cycle
 
-            # interpolate foot from -stride/2 to +stride/2
-            xy_offset = stride_vector * (s - 0.5)
+# LEG 6
+HIP6 = 0
+HIP6_swing = 20 # amount to move from baseline
+HIP6_per = 10.0 # seconds — time for one full up-down cycle
 
-            # raised half-sine arc
-            z_lift = SWING_HEIGHT * np.sin(np.pi * s)
+# actuators
+leg1_knee_id = act("knee1_act")
+hip1_id = act("hip1_act")
 
-            foot_pos = rest.copy()
-            foot_pos[0] += xy_offset[0]
-            foot_pos[1] += xy_offset[1]
-            foot_pos[2] += z_lift
-            mode = 'swing'
+leg2_knee_id = act("knee2_act")
+hip2_id = act("hip2_act")
 
-        else:
-            # ── STANCE ─────────────────────────────────────────────────────
-            # normalised progress through stance: 0 → 1
-            s = (phase - theta_sw) / (2 * np.pi - theta_sw)
+leg3_knee_id = act("knee3_act")
+hip3_id = act("hip3_act")
 
-            # foot sweeps backward relative to body (body moves forward)
-            xy_offset = stride_vector * (0.5 - s)
+leg4_knee_id = act("knee4_act")
+hip4_id = act("hip4_act")
 
-            foot_pos = rest.copy()
-            foot_pos[0] += xy_offset[0]
-            foot_pos[1] += xy_offset[1]
-            mode = 'stance'
+leg5_knee_id = act("knee5_act")
+hip5_id = act("hip5_act")
 
-        commands.append({
-            'leg':      i,
-            'mode':     mode,
-            'foot_pos': foot_pos,
-            'phase':    phase,
-        })
-
-    return commands
+leg6_knee_id = act("knee6_act")
+hip6_id = act("hip6_act")
 
 # =============================================================================
 # Run MuJoCo viewer
 # =============================================================================
-
-# true dir = forward, false = backward
-# true dir = CW, false = CCW
-GAIT = wave_gait
-DIR = True 
-
 with mujoco.viewer.launch_passive(model, data) as viewer:
-    t = 0
-    while viewer.is_running():
-        t += 0.01
-        
-        # Each leg gets a window of 2*pi to move, then stays at 0
-        cycle_length = 2 * np.pi
-        total_cycle = cycle_length * model.nu
-        t_mod = (t * 0.5) % total_cycle  # t * 2 controls overall speed
+    phase_start = time.time()
 
-        for i in range(model.nu):
-            leg_start = i * cycle_length
-            leg_end = leg_start + cycle_length
-            if leg_start <= t_mod < leg_end:
-                data.ctrl[i] = np.sin(t_mod - leg_start) * 0.78
-            else:
-                data.ctrl[i] = 0.0
-        
-        mujoco.mj_step(model, data)
-        viewer.sync()
+    # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
 
-        
-        
+    # Set the mass
+    # model.body_mass[leg_id] = MASS
+    # model.body_mass[leg2_id] = MASS
+    # print(model.body_mass)
     
+    # print(model.body_mass)
+    
+    order_move = []
+    start = 1
+
+    
+    while viewer.is_running():
+        elapsed = time.time() - phase_start
+        
+        if elapsed >= (PERIOD*2):
+            phase_start = time.time()
+            elapsed = 0
+            start = (start % 6) + 1  # cycles 1→2→3→4→5→6→1
+        
+        if start == 1:
+            swing = HIP1_swing
+            leg_id = leg1_knee_id
+            hip_id = hip1_id
+            
+        elif start == 2:
+            swing = HIP2_swing
+            leg_id = leg2_knee_id
+            hip_id = hip2_id
+            
+        elif start == 3:
+            swing = HIP3_swing
+            leg_id = leg3_knee_id
+            hip_id = hip3_id
+            
+        elif start == 4:
+            swing = HIP4_swing
+            leg_id = leg4_knee_id
+            hip_id = hip4_id
+            
+        elif start == 5:
+            swing = HIP5_swing
+            leg_id = leg5_knee_id
+            hip_id = hip5_id
+            
+        elif start == 6:
+            swing = HIP6_swing
+            leg_id = leg6_knee_id
+            hip_id = hip6_id
+
+        # right side, left side same except multiply by -1
+        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
+        
+        if start == 4 or start == 5 or start == 6:
+            knee_target *= -1
+    
+        data.ctrl[leg_id] = knee_target
+        data.ctrl[hip_id] = hip_target
+
+        mj.mj_step(model, data)
+        viewer.sync()
+        time.sleep(model.opt.timestep)
+        
 
 # to run script: 
-
 # mjpython hexapod_gait_simulator.py
+
+
+# print("range:", model.actuator_ctrlrange[leg1_knee_id])
+# print("ctrl:", data.ctrl[leg1_knee_id])
+# print("force:", data.actuator_force[leg1_knee_id])
