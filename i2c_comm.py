@@ -17,7 +17,7 @@ class Instruction:
     def sendToLegs(self):
         
         # names of the legs (match the order of instructions)
-        legs = self.bus.devices.keys()
+        legs = sorted(self.bus.devices.keys())
         num = 0
         
         # send each to legs if not none

@@ -1,4 +1,4 @@
-from gait_and_homing import testI2CJoystick
+from gait_and_homing import TestI2CJoystick
 from i2c_comm import I2CBus, GMTIno
 from joystick import GMTJoystick
 import time
@@ -39,7 +39,7 @@ def joystickLoop():
             x, y = controls
             
             # convert x and y signal to gait
-            testI2CJoystick(x, y, bus)
+            TestI2CJoystick(x, y, bus)
 
         time.sleep(2)
         
