@@ -34,8 +34,8 @@ tripod_group2 = [
 # LEG_UP = 20.0 # degrees to move from baseline
 # PERIOD = 5.0 # seconds — time for one full up-down cycle
 
-NEUTRAL = 95.0
-LEG_UP = 40 # degrees to move from baseline
+NEUTRAL = 0
+LEG_UP = 90 # degrees to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 # =============================================================================
@@ -44,14 +44,25 @@ PERIOD = 5.0 # seconds — time for one full up-down cycle
 with mujoco.viewer.launch_passive(model, data) as viewer:
     phase_start = time.time()
 
+    # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
     leg1_knee_id = act("knee1_act")
     print(leg1_knee_id)
+
+    
+    leg_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "legpart1")
+    print(leg_id)
+
+    # Set the mass
+    model.body_mass[leg_id] = 0
     print(model.body_mass)
+    
+    print(model.body_mass)
+
     
     while viewer.is_running():
         elapsed = time.time() - phase_start
 
-        knee_target = NEUTRAL + LEG_UP * np.sin(2*np.pi*elapsed/PERIOD)
+        knee_target = NEUTRAL + LEG_UP * (1 - np.cos(2*np.pi*elapsed/PERIOD))
         
         print("range:", model.actuator_ctrlrange[leg1_knee_id])
         print("qpos:", data.qpos[model.jnt_qposadr[
