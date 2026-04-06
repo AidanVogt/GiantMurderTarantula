@@ -30,9 +30,4 @@ void getInstruction(int numBytes) {
     Serial.println(c);
 
   }
-
-}
-
-void sendData() {
-  Wire.write("Hello Pi");
 }

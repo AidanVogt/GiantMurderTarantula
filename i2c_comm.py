@@ -75,6 +75,9 @@ class I2CBus:
     
         return finished_devices
     
+    def WriteByte(self, address, data):
+        self.bus.write_byte(address, data)
+    
 class GMTIno:
     def __init__(self, name, address):
         # init unique address for Arduinos
@@ -88,7 +91,7 @@ class GMTIno:
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")
         
-        self.bus.write_byte(self.address, data)
+        self.bus.WriteByte(self.address, data)
         
     def readI2C(self):
         if self.bus is None:
