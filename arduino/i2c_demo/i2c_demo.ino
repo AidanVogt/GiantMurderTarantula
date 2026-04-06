@@ -22,8 +22,8 @@ void loop() {
 }
 
 void getInstruction(int numBytes) {
-  // Serial.println("numBytes");
-  // Serial.println(numBytes);
+  Serial.println("numBytes");
+  Serial.println(numBytes);
 
   while (Wire.available()) {
     unsigned char c  = Wire.read();
