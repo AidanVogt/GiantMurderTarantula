@@ -30,6 +30,7 @@ class Instruction:
             num += 1
             
     def checkFinished(self):
+        print("Checking if done")
         
         num_finished = 0
         
@@ -66,6 +67,7 @@ class I2CBus:
 
             try:
                 response = device.readI2C()
+                print(response, "response")
                 
                 if response == 0x01:
                     finished_devices += 1
