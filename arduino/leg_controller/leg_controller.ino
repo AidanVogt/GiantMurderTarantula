@@ -10,6 +10,8 @@
 #define HALL_B 3
 #define HALL_C 4
 
+#define FLOOR_CONTACT_PIN A0
+
 #define RX_RS485 10 
 #define TX_RS485 11
 
@@ -21,13 +23,15 @@
 // I2C LEG ADDRESS
 #define INO_ADDRESS 0x10
 
-// match python
-struct Instruction {
-  int instr_type;
-  int phase;
-};
+#define NOT_DONE 0
+#define DONE 1
 
-Instruction received;
+#define ACTION_NONE 0
+#define ACTION_FORWARD 1
+#define ACTION_BACKWARD 2
+#define ACTION_UP 3
+#define ACTION_DOWN 4
+#define ACTION_HOME 5
 
 HallSensor encoder = HallSensor(HALL_A, HALL_B, HALL_C, 5);
 SoftwareSerial RS485_serial (RX_RS485, TX_RS485);
@@ -35,8 +39,8 @@ ModbusMaster node;
 
 bool forward = true;
 unsigned int last_print = 0;
-
-int doing_thing = 0;
+int status = NOT_DONE;
+unsigned char current_action = ACTION_NONE;
 
 //////////////// MOTOR MOVEMENT FUNCS ////////////////
 
@@ -62,6 +66,10 @@ void setMotorState(bool EN, bool FR, bool BK) {
   high |= (1 << 3);
 
   node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
+}
+
+bool is_contacting_ground() {
+  return analogRead(FLOOR_CONTACT_PIN) == 1023;
 }
 
 // not recommended for normal operation
@@ -119,16 +127,30 @@ void move_backward() {
   non_braking_stop();
 }
 
+void move_up() {
+  // move stepper
+}
+
+void move_down() {
+  // move stepper and read from contact sensor
+}
+
+void move_home() {
+  // homing sequence
+}
+
 ////////////////// I2C PARSING ////////////////
-void getInstruction(int numBytes) {
+void receiveCommand(int numBytes) {
   while (Wire.available()) {
-    char c = Wire.read();
-    if (c == 0) {
-      doing_thing = 1;
-    } else if(c == 1) {
-      doing_thing = 2;
-    }
+    unsigned char byte = Wire.read();
+    if (byte >= 0x10) continue;
+
+    current_action = byte;
   }
+}
+
+void sendStatus() {
+  Wire.write(status);
 }
 
 
@@ -141,11 +163,13 @@ void setup()
 {
   // I2C
   Wire.begin(INO_ADDRESS);
-  Wire.onReceive(getInstruction);
-  // Wire.onRequest(sendData);
+  Wire.onReceive(receiveCommand);
+  Wire.onRequest(sendStatus);
 
   pinMode(MAX485_RE_NEG, OUTPUT);
   pinMode(MAX485_DE, OUTPUT);
+
+  pinMode(FLOOR_CONTACT_PIN, INPUT);
 
   pinMode(HALL_A, INPUT_PULLUP);
   pinMode(HALL_B, INPUT_PULLUP);
@@ -175,11 +199,16 @@ int direction = 0;
 void loop()
 {
   encoder.update();
-  if (doing_thing == 1) {
-    doing_thing = 0;
+  if        (current_action == ACTION_FORWARD) {
     move_forward();
-  } else if (doing_thing == 2) {
-    doing_thing = 0;
+  } else if (current_action == ACTION_BACKWARD) {
     move_backward();
+  } else if (current_action == ACTION_UP) {
+    move_up();
+  } else if (current_action == ACTION_DOWN) {
+    move_down();
+  } else if (current_action == ACTION_HOME) {
+    move_home();
   }
+  current_action = ACTION_NONE;
 }
