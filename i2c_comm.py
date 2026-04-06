@@ -23,8 +23,10 @@ class Instruction:
 	
         # send each to legs if not none
         for inst in self.instructions:
-            print(num)
-            self.bus.devices[legs[num]].sendData(inst)
+            
+            if len(legs) == 1:
+                self.bus.devices[legs[num]].sendData(inst)
+                break
             num += 1
             
     def checkFinished(self):
