@@ -3,6 +3,7 @@
 
 <mujoco model="hexapod">
     <option timestep="0.002" gravity="0 0 -9.81"/>
+    <compiler inertiafromgeom="true" angle="degree"/>
 
     <!-- for fun -->
     <asset>
@@ -46,7 +47,12 @@
 
         <body name="torso">
             <geom type="mesh" mesh="hexapod_body"/>
-            <freejoint/>
+            <!-- <freejoint/> -->
+
+            <!-- TRY THIS - body is supported by a central beam, control its movement as such -->
+            <joint name="torso_x" type="slide" axis="1 0 0"/>
+            <joint name="torso_y" type="slide" axis="0 1 0"/>
+            <joint name="torso_yaw" type="hinge" axis="0 0 1"/>
 
             <!-- RIGHT SIDE -->
 
@@ -54,19 +60,20 @@
             <body name="leg1">
                 <body name="hip1">
                     <geom type="mesh" mesh="hip1" rgba="1 0 0 1"/>
+                    <joint name="knee1_joint" limited="true" pos="0.32 -0.18 0.6" axis="0 -1 0" type="hinge" range="90 120" ref="95"/>
                 </body>
 
                 <body name="knee1">
+                    <!-- <joint name="knee1_joint" limited="true" pos="0.32 -0.18 0.6" axis="0 -1 0" type="hinge" range="90 120" ref="95"/> -->
                     <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45" ref="0"/>
+                    
                     <geom type="mesh" mesh="knee1" rgba="1 0 0 1"/>
 
                     <body name="legpart1">
-                        <joint name="knee1_joint" pos="0.32 0.18 0.6" axis="0 1 0" type="hinge" range="-45 45" ref="0"/>
-                        <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
+                        
+                        <geom type="mesh" mesh="leg1" rgba="1 0 0 1"  />
                     </body>
                 </body>
-
-
             </body>
 
             <!-- Green leg 2 -->
@@ -76,11 +83,11 @@
                 </body>
 
                 <body name="knee2">
-                    <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="-45 45"  />
                     <geom type="mesh" mesh="knee2" rgba="0 1 0 1"/>
 
                     <body name="legpart2">
-                        <joint name="knee2_joint" pos="0.37 0 0.6" axis="0 1 0" type="hinge" range="-45 45"/>
+                        <joint name="knee2_joint" pos="0.37 0 0.6" axis="0 1 0" type="hinge" range="90 130" ref="95"/>
                         <geom type="mesh" mesh="leg2" rgba="0 1 0 1"/>
                     </body>
                 </body>
@@ -99,7 +106,7 @@
                     <geom type="mesh" mesh="knee3" rgba="0 0 1 1"/>
 
                     <body name="legpart3">
-                        <joint name="knee3_joint" pos="0.32 0.18 0.6" axis="0 1 0" type="hinge" range="-45 45"/>
+                        <joint name="knee3_joint" pos="0.32 0.18 0.6" axis="0 1 0" type="hinge" range="90 120" ref="95"/>
                         <geom type="mesh" mesh="leg3" rgba="0 0 1 1"/>
                     </body>
                 </body>
@@ -116,11 +123,11 @@
                 </body>
 
                 <body name="knee4">
-                    <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"  />
                     <geom type="mesh" mesh="knee4" rgba="1 1 0 1"/>
 
                     <body name="legpart4">
-                        <joint name="knee4_joint" pos="-0.32 -0.18 0.6" axis="0 1 0" type="hinge" range="-45 45"/>
+                        <joint name="knee4_joint" pos="-0.32 -0.18 0.6" axis="0 1 0" type="hinge" range="90 120" ref="90"/>
                         <geom type="mesh" mesh="leg4" rgba="1 1 0 1"/>
                     </body>
                 </body>
@@ -133,11 +140,11 @@
                 </body>
 
                 <body name="knee5">
-                    <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="-45 45"  />
                     <geom type="mesh" mesh="knee5" rgba="0 1 1 1"/>
 
                     <body name="legpart5">
-                        <joint name="knee5_joint" pos="-0.36 0 0.6" axis="0 1 0" type="hinge" range="-45 45"/>
+                        <joint name="knee5_joint" pos="-0.36 0 0.6" axis="0 1 0" type="hinge" range="90 120" ref="90"/>
                         <geom type="mesh" mesh="leg5" rgba="0 1 1 1"/>
                     </body>
                 </body>
@@ -150,12 +157,12 @@
                 </body>
 
                 <body name="knee6">
-                    <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45"/>
+                    <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-45 45" ref="0" />
                     <geom type="mesh" mesh="knee6" rgba="1 0 1 1"/>
 
 
                     <body name="legpart6">
-                        <joint name="knee6_joint" pos="-0.32 0.18 0.6" axis="0 1 0" type="hinge" range="-45 45"/>
+                        <joint name="knee6_joint" pos="-0.32 0.18 0.6" axis="0 1 0" type="hinge" range="90 120" ref="90"/>
                         <geom type="mesh" mesh="leg6" rgba="1 0 1 1"/>
                     </body>
                 </body>
@@ -168,7 +175,7 @@
 
     <actuator>
         <!-- HIP MOVEMENT ACTUATION -->
-        <position name="hip1_act" joint="hip1_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip1_act" joint="hip1_joint" kp="1" kv="0.1" ctrlrange="-5 5"/>
         <position name="hip2_act" joint="hip2_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
         <position name="hip3_act" joint="hip3_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
         <position name="hip4_act" joint="hip4_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
@@ -176,12 +183,16 @@
         <position name="hip6_act" joint="hip6_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
 
         <!-- KNEE MOVEMENT ACTUATION -->
-        <position name="knee1_act" joint="knee1_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
-        <position name="knee2_act" joint="knee2_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
-        <position name="knee3_act" joint="knee3_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
-        <position name="knee4_act" joint="knee4_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
-        <position name="knee5_act" joint="knee5_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
-        <position name="knee6_act" joint="knee6_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <!-- kp and kv control how "powerful" the actuator is -->
+        <!-- CTRL range is in radians, and is between 90 deg and 120 deg -->
+        <!-- <position name="knee1_act" joint="knee1_joint" kp="40" kv="6" ctrlrange="0.0 0.5236"/> -->
+        <!-- <motor name="knee1_act" joint="knee1_joint" gear="50" ctrlrange="-4.5 4.5" user="2900"/> -->
+        <position name="knee1_act" joint="knee1_joint" kp="40" kv="6" ctrlrange="90 120"/>
+        <position name="knee2_act" joint="knee2_joint" kp="40" kv="6" ctrlrange="90 120"/>
+        <position name="knee3_act" joint="knee3_joint" kp="40" kv="6" ctrlrange="1.5708 2.094"/>
+        <position name="knee4_act" joint="knee4_joint" kp="40" kv="6" ctrlrange="1.5708 2.094"/>
+        <position name="knee5_act" joint="knee5_joint" kp="40" kv="6" ctrlrange="1.5708 2.094"/>
+        <position name="knee6_act" joint="knee6_joint" kp="40" kv="6" ctrlrange="1.5708 2.094"/>
 
     </actuator>
 

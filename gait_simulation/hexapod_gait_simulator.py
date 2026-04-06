@@ -4,6 +4,7 @@ import numpy as np
 import time
 
 # load hexapod model from config
+# model = mj.MjModel.from_xml_path("hexapod.xml")
 model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)
 
@@ -15,17 +16,11 @@ data  = mj.MjData(model)
 def act(name):
     return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
 
-# phase matrices (L1, L2, L3, L4, L5, L6)
-TRIPOD_GAIT = np.array([
-    0, np.pi, 0,
-    np.pi, 0, np.pi,
-])
-
 # specify which legs move in tandem
 tripod_group1 = [
     (act("hip1_act"), act("knee1_act")), # front right
-    # (act("hip3_act"), act("knee3_act")), # back right
-    # (act("hip5_act"), act("knee5_act")), # middle left
+    (act("hip3_act"), act("knee3_act")), # back right
+    (act("hip5_act"), act("knee5_act")), # middle left
 ]
 tripod_group2 = [
     (act("hip2_act"), act("knee2_act")),   # front left
@@ -34,68 +29,43 @@ tripod_group2 = [
 ]
 
 
-# set globals 
-STEP_HEIGHT   = 0.2   # angle (rad) to lift leg
-STEP_FORWARD  = 0.6  # angle (rad) for forward stroke
-STEP_BACK     = -0.6  # angle (rad) for back stroke (stance push)
-SWING_TIME    = 0.5   # seconds for swing phase
-STANCE_TIME   = 0.5   # seconds for stance phase
-DURATION = 2
+# testing
+# NEUTRAL = 95.0
+# LEG_UP = 20.0 # degrees to move from baseline
+# PERIOD = 5.0 # seconds — time for one full up-down cycle
 
-def SetTripod(group, hip_angle, knee_angle, ctrl):
-    print(group)
-    for hip, knee in group:
-        ctrl[hip] = hip_angle
-        ctrl[knee] = knee_angle
-
-def SetStance(group, ctrl):
-    """Leg on ground, pushing backward."""
-    # SetTripod(group, hip_angle=STEP_BACK, knee_angle=0.0, ctrl=ctrl)
-    SetTripod(group, hip_angle=0, knee_angle=0.0, ctrl=ctrl)
-
-def SetSwing(group, ctrl):
-    """Leg lifted and swinging forward."""
-    # SetTripod(group, hip_angle=STEP_FORWARD, knee_angle=STEP_HEIGHT, ctrl=ctrl)
-    pass
-
-def Test(group, ctrl):
-    SetTripod(group, 0, 10, ctrl)
-
+NEUTRAL = 95.0
+LEG_UP = 40 # degrees to move from baseline
+PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 # =============================================================================
 # Run MuJoCo viewer
 # =============================================================================
-
-# true dir = forward, false = backward
-# true dir = CW, false = CCW
-DIR = True 
-
 with mujoco.viewer.launch_passive(model, data) as viewer:
-    phase = 0  # 0 = A swings, 1 = B swings
     phase_start = time.time()
 
+    leg1_knee_id = act("knee1_act")
+    print(leg1_knee_id)
+    print(model.body_mass)
+    
     while viewer.is_running():
-        now = time.time()
-        elapsed = now - phase_start
-        duration = DURATION
+        elapsed = time.time() - phase_start
 
-        if elapsed > 10:
-            phase = 1 - phase   # flip phase
-            phase_start = now
-            elapsed = 0
+        knee_target = NEUTRAL + LEG_UP * np.sin(2*np.pi*elapsed/PERIOD)
+        
+        print("range:", model.actuator_ctrlrange[leg1_knee_id])
+        print("qpos:", data.qpos[model.jnt_qposadr[
+            mj.mj_name2id(model, mj.mjtObj.mjOBJ_JOINT, "knee1_joint")
+        ]])
+        print("ctrl:", data.ctrl[leg1_knee_id])
+        print("force:", data.actuator_force[leg1_knee_id])
 
-        if phase == 0:
-            Test(tripod_group1, data.ctrl)
-        # else:
-            
-        #     Test(tripod_group2, data.ctrl)
+        data.ctrl[leg1_knee_id] = knee_target
 
-        mujoco.mj_step(model, data)
+        mj.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
         
-    
 
 # to run script: 
-
 # mjpython hexapod_gait_simulator.py
