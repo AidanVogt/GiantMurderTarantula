@@ -2,8 +2,7 @@
 <!-- Used Blender to organize the components into the hexapod shape, referred to the Blender coordinates for individual component positioning -->
 
 <mujoco model="hexapod">
-    <!-- <option timestep="0.002" gravity="0 0 -9.81"/> -->
-    <option timestep="0.002" gravity="0 0 3"/>
+    <option timestep="0.002" gravity="0 0 -9.81"/>
     <compiler inertiafromgeom="true" angle="degree" autolimits="true"/>
 
     <!-- for fun -->
@@ -21,7 +20,7 @@
         <mesh name="knee1" file="blender_obj/knee1_wc.obj" scale="1 1 1"/>
         <mesh name="leg1" file="blender_obj/leg1_wc.obj" scale="1 1 1"/>
 
-        <mesh name="hip2" file="blender_obj/hip2_wc.obj" scale="1 1 1"/>
+        <!-- <mesh name="hip2" file="blender_obj/hip2_wc.obj" scale="1 1 1"/>
         <mesh name="knee2" file="blender_obj/knee2_wc.obj" scale="1 1 1"/>
         <mesh name="leg2" file="blender_obj/leg2_wc.obj" scale="1 1 1"/>
 
@@ -39,7 +38,7 @@
 
         <mesh name="hip6" file="blender_obj/hip6_wc.obj" scale="1 1 1"/>
         <mesh name="knee6" file="blender_obj/knee6_wc.obj" scale="1 1 1"/>
-        <mesh name="leg6" file="blender_obj/leg6_wc.obj" scale="1 1 1"/>
+        <mesh name="leg6" file="blender_obj/leg6_wc.obj" scale="1 1 1"/> -->
     </asset>
 
     <worldbody>
@@ -56,55 +55,28 @@
             <joint name="torso_yaw" type="hinge" axis="0 0 1"/> -->
 
             <!-- RIGHT SIDE -->
-
+            
             <body name="leg1">
-                <body name="legpart1" pos="0 0 0">
-                    <joint name="knee1_joint"
-                        type="hinge"
-                        axis="0 -1 0"
-                        range="90 120"
-                        ref="120" pos="0.32 -0.18 0.6" />
-                    <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
-                </body>
-            </body>
-
-
-            <!-- HIP TEST -->
-            <!-- <body name="leg1">
-                <body name="legpart1">
-                    <joint name="knee1_joint"
-                        type="hinge"
-                        axis="0 -1 0"
-                        limited="true"
-                        range="-300 -120"
-                        ref="-90" pos="0.32 -0.18 0.6" />
-                    <geom type="mesh" mesh="hip1" rgba="1 0 0 1"/>
-                </body>
-            </body> -->
-
-            <!-- <body name="leg1">
-
-            </body> -->
-
-            <!-- Red leg 1 -->
-            <!-- <body name="leg1">
                 <body name="hip1">
+                    <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="0 60" ref="30"/>
                     <geom type="mesh" mesh="hip1" rgba="1 0 0 1"/>
-                    <joint name="knee1_joint" limited="true" pos="0.32 -0.18 0.6" axis="0 1 0" type="hinge" range="90 120" ref="90"/>
-                </body>
 
-                     <body name="knee1">
-                        
-                        <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-45 45" ref="0"/>
-                        
+                    <body name="knee1">
                         <geom type="mesh" mesh="knee1" rgba="1 0 0 1"/>
 
-                        <body name="legpart1">
-                            
-                            <geom type="mesh" mesh="leg1" rgba="1 0 0 1"  />
+                        <body name="legpart1" pos="0 0 0">
+                            <joint name="knee1_joint"
+                                type="hinge"
+                                axis="0 -1 0"
+                                range="90 120"
+                                ref="120" pos="0.32 -0.18 0.6" />
+                            <geom type="mesh" mesh="leg1" rgba="1 0 0 1"/>
                         </body>
                     </body>
-            </body> -->
+                </body>
+
+            </body>
+
 
             <!-- Green leg 2 -->
             <!-- <body name="leg2">
@@ -203,8 +175,8 @@
 
     <actuator>
         <!-- HIP MOVEMENT ACTUATION -->
-        <!-- <position name="hip1_act" joint="hip1_joint" kp="1" kv="0.1" ctrlrange="-5 5"/>
-        <position name="hip2_act" joint="hip2_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
+        <position name="hip1_act" joint="hip1_joint" kp="4000" kv="60"/>
+        <!-- <position name="hip2_act" joint="hip2_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
         <position name="hip3_act" joint="hip3_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
         <position name="hip4_act" joint="hip4_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
         <position name="hip5_act" joint="hip5_joint" kp="1" kv="0.1" ctrlrange="-0.78 0.78"/>
