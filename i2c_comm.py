@@ -34,12 +34,10 @@ class Instruction:
         
         num_finished = 0
         finished_devices = self.bus.pollArduinos()
-        print(finished_devices)
         
-        # while num_finished < len(self.bus.devices.keys()):
-            
-        #     finished_devices = self.bus.pollArduinos()
-        #     num_finished += finished_devices
+        while num_finished < len(self.bus.devices.keys()):
+            finished_devices = self.bus.pollArduinos()
+            num_finished += finished_devices
         
         print("All devices finished")
 
@@ -71,7 +69,7 @@ class I2CBus:
                 response = device.readI2C()
                 print(response, "response")
                 
-                if response == 0x01:
+                if response == 211:
                     finished_devices += 1
                     print(f"{device.name} address {device.address} finished")
                 
