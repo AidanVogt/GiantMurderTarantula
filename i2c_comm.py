@@ -33,13 +33,13 @@ class Instruction:
         
         num_finished = 0
         
-        while num_finished < 6:
+        while num_finished < len(self.bus.devices.keys()):
             
             finished_devices = self.bus.pollArduinos()
             num_finished += finished_devices
         
         print("All devices finished")
-        return
+
 
 
 class I2CBus:
@@ -82,7 +82,7 @@ class I2CBus:
         self.bus.write_byte(address, data)
         
     def ReadByte(self, address):
-        self.bus.read_byte(address)
+        return self.bus.read_byte(address)
     
 class GMTIno:
     def __init__(self, name, address):
