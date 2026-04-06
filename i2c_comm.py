@@ -19,7 +19,7 @@ class Instruction:
         # names of the legs (match the order of instructions)
         legs = sorted(self.bus.devices.keys())
         num = 0
-        
+	
         # send each to legs if not none
         for inst in self.instructions:
     
