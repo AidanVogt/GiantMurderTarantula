@@ -16,6 +16,9 @@ data  = mj.MjData(model)
 def act(name):
     return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
 
+def body(name):
+    return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
+
 # specify which legs move in tandem
 tripod_group1 = [
     (act("hip1_act"), act("knee1_act")), # front right
@@ -31,7 +34,7 @@ tripod_group2 = [
 
 # testing
 
-MASS = 0
+MASS = 2
 
 # upward leg movement
 NEUTRAL = 0
@@ -90,6 +93,31 @@ hip5_id = act("hip5_act")
 leg6_knee_id = act("knee6_act")
 hip6_id = act("hip6_act")
 
+def MoveTripod(act1, act2, act3, val1, val2, val3):
+    data.ctrl[act1] = val1
+    data.ctrl[act2] = val2
+    data.ctrl[act3] = val3
+
+
+def MoveTripodGroupA(leg1, leg2, leg3, elapsed):
+    # move each leg up and down to start
+    
+    knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+    
+    data.ctrl[leg1] = knee_target
+    data.ctrl[leg2] = knee_target
+    data.ctrl[leg3] = -knee_target
+    
+def MoveTripodGroupB(leg1, leg2, leg3, elapsed):
+    
+    knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+    
+    data.ctrl[leg1] = -knee_target
+    data.ctrl[leg2] = -knee_target
+    data.ctrl[leg3] = knee_target
+    
+    
+
 # =============================================================================
 # Run MuJoCo viewer
 # =============================================================================
@@ -99,63 +127,62 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
 
     # Set the mass
-    # model.body_mass[leg_id] = MASS
-    # model.body_mass[leg2_id] = MASS
-    # print(model.body_mass)
+    model.body_mass[body("leg1")] = MASS
+    model.body_mass[body("leg2")] = MASS
+    model.body_mass[body("leg3")] = MASS
+    model.body_mass[body("leg4")] = MASS
+    model.body_mass[body("leg5")] = MASS
+    model.body_mass[body("leg6")] = MASS
     
-    # print(model.body_mass)
+    model.body_mass[body("torso")] = 140
+    print(model.body_mass)
     
-    order_move = []
     start = 1
 
-    
     while viewer.is_running():
         elapsed = time.time() - phase_start
         
         if elapsed >= (PERIOD*2):
             phase_start = time.time()
             elapsed = 0
-            start = (start % 6) + 1  # cycles 1→2→3→4→5→6→1
+            start = (start % 2) + 1
+            
+        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        # hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
         
         if start == 1:
-            swing = HIP1_swing
-            leg_id = leg1_knee_id
-            hip_id = hip1_id
+            act1 = leg1_knee_id
+            act2 = leg3_knee_id
+            act3 = leg5_knee_id
             
-        elif start == 2:
-            swing = HIP2_swing
-            leg_id = leg2_knee_id
-            hip_id = hip2_id
-            
-        elif start == 3:
-            swing = HIP3_swing
-            leg_id = leg3_knee_id
-            hip_id = hip3_id
-            
-        elif start == 4:
-            swing = HIP4_swing
-            leg_id = leg4_knee_id
-            hip_id = hip4_id
-            
-        elif start == 5:
-            swing = HIP5_swing
-            leg_id = leg5_knee_id
-            hip_id = hip5_id
-            
-        elif start == 6:
-            swing = HIP6_swing
-            leg_id = leg6_knee_id
-            hip_id = hip6_id
+            val1 = knee_target
+            val2 = knee_target
+            val3 = -knee_target
 
-        # right side, left side same except multiply by -1
-        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
-        hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
+
+        elif start == 2:
+            act1 = leg4_knee_id
+            act2 = leg6_knee_id
+            act3 = leg2_knee_id
+            
+            val1 = -knee_target
+            val2 = -knee_target
+            val3 = knee_target
+            
         
-        if start == 4 or start == 5 or start == 6:
-            knee_target *= -1
     
-        data.ctrl[leg_id] = knee_target
-        data.ctrl[hip_id] = hip_target
+        MoveTripod(act1, act2, act3, val1, val2, val3)
+        
+
+        # # right side, left side same except multiply by -1
+        # knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        # hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
+        
+        # if start == 4 or start == 5 or start == 6:
+        #     knee_target *= -1
+    
+        # data.ctrl[leg_id] = knee_target
+        # data.ctrl[hip_id] = hip_target
 
         mj.mj_step(model, data)
         viewer.sync()

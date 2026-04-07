@@ -186,9 +186,6 @@
 
         <!-- KNEE MOVEMENT ACTUATION -->
         <!-- kp and kv control how "powerful" the actuator is -->
-        <!-- CTRL range is in radians, and is between 90 deg and 120 deg -->
-        <!-- <position name="knee1_act" joint="knee1_joint" kp="40" kv="6" ctrlrange="0.0 0.5236"/> -->
-        <!-- <motor name="knee1_act" joint="knee1_joint" gear="50" ctrlrange="-4.5 4.5" user="2900"/> -->
         <position name="knee1_act" joint="knee1_joint" kp="400" kv="60"/>
         <position name="knee2_act" joint="knee2_joint" kp="400" kv="60"/>
         <position name="knee3_act" joint="knee3_joint" kp="400" kv="60"/>
@@ -198,7 +195,7 @@
 
     </actuator>
 
-    <!-- Not sure if needed but have it anyway -->
+
     <contact>
         <exclude body1="torso" body2="leg1"/>
         <exclude body1="torso" body2="leg2"/>
@@ -208,10 +205,9 @@
         <exclude body1="torso" body2="leg6"/>
 
         <exclude body1="leg1" body2="leg2"/>
-        <!-- <exclude body1="leg2" body2="leg3"/>
+        <exclude body1="leg2" body2="leg3"/>
         <exclude body1="leg2" body2="leg3"/>
         <exclude body1="leg4" body2="leg5"/>
-        <exclude body1="leg5" body2="leg6"/> -->
-
+        <exclude body1="leg5" body2="leg6"/>
     </contact>
 </mujoco>

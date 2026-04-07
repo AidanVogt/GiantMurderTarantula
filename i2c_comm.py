@@ -69,6 +69,7 @@ class I2CBus:
                 response = device.readI2C()
                 print(response, "response")
                 
+                # TODO: testing response is done or not
                 if response == 211:
                     finished_devices += 1
                     print(f"{device.name} address {device.address} finished")
@@ -109,3 +110,21 @@ class GMTIno:
         return self.bus.ReadByte(self.address)
         
     
+def testI2C(bus):
+    # bus of type I2CBus
+    a = tuple([i for i in range(len(bus.devices.items()))])
+    b = a[::-1]
+    
+    # make instructs
+    test = Instruction(bus, a)
+    test2 = Instruction(bus, b)
+    
+    test.sendToLegs()
+    test.checkFinished()
+    
+    print("Sent first instruction set")
+    
+    test2.sendToLegs()
+    test2.checkFinished()
+    
+    print("Sent second instruction to legs")
