@@ -59,7 +59,7 @@
             
             <body name="leg1">
                 <body name="hip1">
-                    <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-60 60" ref="50" damping="10"/>
+                    <joint name="hip1_joint" pos="0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-60 60" ref="45" damping="50"/>
                     <geom type="mesh" mesh="hip1" rgba="1 0 0 1"/>
 
                     <body name="knee1">
@@ -81,7 +81,7 @@
             <!-- Green leg 2 -->
             <body name="leg2">
                 <body name="hip2">
-                    <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="0 60" ref="0" damping="10"/>
+                    <joint name="hip2_joint" pos="0.22 0 0.6" axis="0 0 1" type="hinge" range="-60 60" ref="0" damping="50"/>
                     <geom type="mesh" mesh="hip2" rgba="0 1 0 1"/>
 
                     <body name="knee2">
@@ -98,7 +98,7 @@
             <!-- Blue leg 3 -->
             <body name="leg3">
                 <body name="hip3">
-                    <joint name="hip3_joint" pos="0.18 0.18 0.6" axis="0 0 1" type="hinge" range="0 60" ref="-50" damping="10"/>
+                    <joint name="hip3_joint" pos="0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-60 60" ref="-45" damping="50"/>
                     <geom type="mesh" mesh="hip3" rgba="0 0 1 1"/>
 
                     <body name="knee3">
@@ -118,7 +118,7 @@
             <!-- Yellow leg 4 -->
             <body name="leg4">
                 <body name="hip4">
-                    <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="0 60" ref="-50" damping="10"/>
+                    <joint name="hip4_joint" pos="-0.18 -0.18 0.6" axis="0 0 1" type="hinge" range="-60 60" ref="-45" damping="50"/>
                     <geom type="mesh" mesh="hip4" rgba="1 1 0 1"/>
 
 
@@ -139,7 +139,7 @@
             <!-- Cyan leg 5 -->
             <body name="leg5">
                 <body name="hip5">
-                    <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="0 60" damping="10"/>
+                    <joint name="hip5_joint" pos="-0.2 0 0.6" axis="0 0 1" type="hinge" range="-60 60" damping="50"/>
                     <geom type="mesh" mesh="hip5" rgba="0 1 1 1"/>
 
                     <body name="knee5">
@@ -159,7 +159,7 @@
             <!-- Magenta leg 6 -->
             <body name="leg6">
                 <body name="hip6">
-                    <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="0 60" ref="50" damping="10"/>
+                    <joint name="hip6_joint" pos="-0.18 0.18 0.6" axis="0 0 1" type="hinge" range="-60 60" ref="45" damping="50"/>
                     <geom type="mesh" mesh="hip6" rgba="1 0 1 1"/>
 
                     <body name="knee6">

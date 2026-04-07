@@ -42,39 +42,10 @@ KNEE_NEUTRAL = 0
 LEG_UP = 150 # amount to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
-HIPN = 0
+# side-to-side leg movement
+HIP_NEUTRAL = 0
 HIP_PER = 10
-HIP_SWING = 2
-
-# LEG 1
-HIP1N = 50
-HIP1_swing = 20 # amount to move from baseline
-HIP1_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 2
-HIP2 = 0
-HIP2_swing = 20 # amount to move from baseline
-HIP2_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 3
-HIP3 = 0
-HIP3_swing = 20 # amount to move from baseline
-HIP3_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 4
-HIP4 = 0
-HIP4_swing = 20 # amount to move from baseline
-HIP4_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 5
-HIP5 = 0
-HIP5_swing = 20 # amount to move from baseline
-HIP5_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 6
-HIP6 = 0
-HIP6_swing = 20 # amount to move from baseline
-HIP6_per = 10.0 # seconds — time for one full up-down cycle
+HIP_SWING = np.radians(60)
 
 # actuators
 leg1_knee_id = act("knee1_act")
@@ -137,7 +108,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
         
         # hip swing
-        hip_target = HIP2 + (HIP_SWING * .5) * (np.sin(2*np.pi*elapsed/HIP_PER))
+        hip_target = HIP_NEUTRAL + (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER))
         # hip_target = 0.5(HIP_SWING)
         
         if start == 1:
@@ -174,8 +145,8 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     
         # MoveTripod(act1, act2, act3, val1, val2, val3)
         # MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, -hip_target)
-        MoveOneLeg(leg1_knee_id, 150)
-        MoveOneLeg(hip1_id, hip_target)
+        MoveOneLeg(leg6_knee_id, -150)
+        MoveOneLeg(hip6_id, hip_target)
 
         # # right side, left side same except multiply by -1
         # knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
