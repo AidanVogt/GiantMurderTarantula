@@ -37,17 +37,17 @@ tripod_group2 = [
 LEG_MASS = 2
 TORSO_MASS = 70
 
-# upward leg movement
-NEUTRAL = 0
+# upward leg movement (same for all legs)
+KNEE_NEUTRAL = 0
 LEG_UP = 150 # amount to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 HIPN = 0
 HIP_PER = 10
-HIP_SWING = 10
+HIP_SWING = 2
 
 # LEG 1
-HIPN = 0
+HIP1N = 50
 HIP1_swing = 20 # amount to move from baseline
 HIP1_per = 10.0 # seconds — time for one full up-down cycle
 
@@ -134,10 +134,11 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             start = (start % 2) + 1
         
         # knee up is fine
-        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
         
         # hip swing
-        hip_target = HIPN + HIP_SWING * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
+        hip_target = HIP2 + (HIP_SWING * .5) * (np.sin(2*np.pi*elapsed/HIP_PER))
+        # hip_target = 0.5(HIP_SWING)
         
         if start == 1:
             
@@ -177,7 +178,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         MoveOneLeg(hip1_id, hip_target)
 
         # # right side, left side same except multiply by -1
-        # knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        # knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
         # hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
         
         # if start == 4 or start == 5 or start == 6:
