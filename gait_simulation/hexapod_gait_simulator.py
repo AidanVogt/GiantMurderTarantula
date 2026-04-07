@@ -33,8 +33,9 @@ tripod_group2 = [
 
 
 # testing
-
-MASS = 2
+# mass in kg
+LEG_MASS = 2
+TORSO_MASS = 70
 
 # upward leg movement
 NEUTRAL = 0
@@ -43,6 +44,7 @@ PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 HIPN = 0
 HIP_PER = 10
+HIP_SWING = 10
 
 # LEG 1
 HIPN = 0
@@ -98,7 +100,9 @@ def MoveTripod(act1, act2, act3, val1, val2, val3):
     data.ctrl[act1] = val1
     data.ctrl[act2] = val2
     data.ctrl[act3] = val3
-    
+
+def MoveOneLeg(id, val):
+    data.ctrl[id] = val
     
 # =============================================================================
 # Run MuJoCo viewer
@@ -109,14 +113,14 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
 
     # Set the masses
-    model.body_mass[body("leg1")] = MASS
-    model.body_mass[body("leg2")] = MASS
-    model.body_mass[body("leg3")] = MASS
-    model.body_mass[body("leg4")] = MASS
-    model.body_mass[body("leg5")] = MASS
-    model.body_mass[body("leg6")] = MASS
+    model.body_mass[body("leg1")] = LEG_MASS
+    model.body_mass[body("leg2")] = LEG_MASS
+    model.body_mass[body("leg3")] = LEG_MASS
+    model.body_mass[body("leg4")] = LEG_MASS
+    model.body_mass[body("leg5")] = LEG_MASS
+    model.body_mass[body("leg6")] = LEG_MASS
     
-    model.body_mass[body("torso")] = 140
+    model.body_mass[body("torso")] = TORSO_MASS
     print(model.body_mass)
     
     start = 1
@@ -128,9 +132,12 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             phase_start = time.time()
             elapsed = 0
             start = (start % 2) + 1
-            
+        
+        # knee up is fine
         knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
-        hip_target = HIPN + HIP1_swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
+        
+        # hip swing
+        hip_target = HIPN + HIP_SWING * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
         
         if start == 1:
             
@@ -164,9 +171,10 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             hip_act3 = hip2_id
         
     
-        MoveTripod(act1, act2, act3, val1, val2, val3)
-        MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, -hip_target)
-        
+        # MoveTripod(act1, act2, act3, val1, val2, val3)
+        # MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, -hip_target)
+        MoveOneLeg(leg1_knee_id, 150)
+        MoveOneLeg(hip1_id, hip_target)
 
         # # right side, left side same except multiply by -1
         # knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
