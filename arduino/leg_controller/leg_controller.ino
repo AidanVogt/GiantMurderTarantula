@@ -10,13 +10,17 @@
 #define HALL_B 3
 #define HALL_C 4
 
+#define EN_PIN 5
+#define DIR_PIN 6
+#define PUL_PIN 7
+
 #define FLOOR_CONTACT_PIN A0
 
 #define RX_RS485 10 
 #define TX_RS485 11
 
 #define MOTOR_SPEED 200
-#define MOVE_INTERVAL 250
+#define HIP_MOVE_INTERVAL 250
 
 #define PRINT_INTERVAL 250
 
@@ -93,8 +97,32 @@ void set_backward() {
   setMotorState(1,1,0);
 }
 
+void step_up() {
+  Serial.println("stepping up");
+  digitalWrite(DIR_PIN, LOW);
+  for (int i = 0; i < 250; i++) {
+    encoder.update();
+    digitalWrite(PUL_PIN, HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(PUL_PIN, LOW);
+    delayMicroseconds(1000);
+  }
+}
+
+void step_down() {
+  Serial.println("stepping down");
+  digitalWrite(DIR_PIN, HIGH);
+  for (int i = 0; i < 100; i++) {
+    encoder.update();
+    digitalWrite(PUL_PIN, HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(PUL_PIN, LOW);
+    delayMicroseconds(1000);
+  }
+}
+
 void move_forward() {
-  int end_condition = encoder.getAngle() + MOVE_INTERVAL;
+  int end_condition = encoder.getAngle() + HIP_MOVE_INTERVAL;
   set_forward();
   while (encoder.getAngle() < end_condition) {
     encoder.update();
@@ -111,7 +139,7 @@ void move_forward() {
 }
 
 void move_backward() {
-  int end_condition = encoder.getAngle() - MOVE_INTERVAL;
+  int end_condition = encoder.getAngle() - HIP_MOVE_INTERVAL;
   set_backward();
   while (encoder.getAngle() > end_condition) {
     encoder.update();
@@ -128,11 +156,18 @@ void move_backward() {
 }
 
 void move_up() {
-  // move stepper
+  step_up();
 }
 
+// void move_down() {
+//   while (!is_contacting_ground()) {
+//     encoder.update();
+//     step_down();
+//   }
+// }
+
 void move_down() {
-  // move stepper and read from contact sensor
+  step_down();
 }
 
 void move_home() {
@@ -179,6 +214,15 @@ void setup()
   digitalWrite(MAX485_RE_NEG, LOW);
   digitalWrite(MAX485_DE, LOW);
 
+  pinMode(EN_PIN, OUTPUT);
+  pinMode(DIR_PIN, OUTPUT);
+  pinMode(PUL_PIN, OUTPUT); 
+
+  digitalWrite(EN_PIN, LOW);
+  digitalWrite(DIR_PIN, LOW);
+  digitalWrite(PUL_PIN, LOW);
+
+
   RS485_serial.begin(9600);
   Serial.begin(115200);
 
@@ -196,9 +240,24 @@ void setup()
 
 int direction = 0;
 
+int get_action_serial() {
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 'f')
+      current_action = ACTION_FORWARD;
+    if (c == 'b')
+      current_action = ACTION_BACKWARD;
+    if (c == 'u')
+      current_action = ACTION_UP;
+    if (c == 'd')
+      current_action = ACTION_DOWN;
+  }
+}
+
 void loop()
 {
   encoder.update();
+  get_action_serial();
   if        (current_action == ACTION_FORWARD) {
     move_forward();
   } else if (current_action == ACTION_BACKWARD) {
