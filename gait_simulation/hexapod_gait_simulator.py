@@ -4,72 +4,35 @@ import numpy as np
 import time
 
 # load hexapod model from config
-# model = mj.MjModel.from_xml_path("hexapod.xml")
 model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)
 
-# XML REF
-# Actuators 
-# 0-5: hip1, hip2, hip3, hip4, hip5, hip6
-# 6-11: knee1, knee2, knee3, knee4, knee5, knee6
-
+# helpers
 def act(name):
     return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
 
-# specify which legs move in tandem
-tripod_group1 = [
-    (act("hip1_act"), act("knee1_act")), # front right
-    (act("hip3_act"), act("knee3_act")), # back right
-    (act("hip5_act"), act("knee5_act")), # middle left
-]
-tripod_group2 = [
-    (act("hip2_act"), act("knee2_act")),   # front left
-    (act("hip4_act"), act("knee4_act")),   # mid right
-    (act("hip6_act"), act("knee6_act")),   # back left
-]
+def body(name):
+    return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
 
+# =============================================================================
+# Constants and actuators
+# =============================================================================
 
-# testing
+# mass in kg
+LEG_MASS = 2
+TORSO_MASS = 70
 
-MASS = 0
-
-# upward leg movement
-NEUTRAL = 0
-LEG_UP = 150 # amount to move from baseline
+# upward leg movement (same for all legs)
+KNEE_NEUTRAL = 0
+LEG_UP = 100 # amount to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
-HIPN = 0
-HIP_PER = 10
+# side-to-side leg movement
+HIP_NEUTRAL = 0
+HIP_PER = 5
+HIP_SWING = np.radians(40)
 
-# LEG 1
-HIPN = 0
-HIP1_swing = 20 # amount to move from baseline
-HIP1_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 2
-HIP2 = 0
-HIP2_swing = 20 # amount to move from baseline
-HIP2_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 3
-HIP3 = 0
-HIP3_swing = 20 # amount to move from baseline
-HIP3_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 4
-HIP4 = 0
-HIP4_swing = 20 # amount to move from baseline
-HIP4_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 5
-HIP5 = 0
-HIP5_swing = 20 # amount to move from baseline
-HIP5_per = 10.0 # seconds — time for one full up-down cycle
-
-# LEG 6
-HIP6 = 0
-HIP6_swing = 20 # amount to move from baseline
-HIP6_per = 10.0 # seconds — time for one full up-down cycle
+DUTY_CYCLE = 0.4
 
 # actuators
 leg1_knee_id = act("knee1_act")
@@ -91,6 +54,116 @@ leg6_knee_id = act("knee6_act")
 hip6_id = act("hip6_act")
 
 # =============================================================================
+# Gait Functions
+# =============================================================================
+
+def MoveTripod(act1, act2, act3, val1, val2, val3):
+    data.ctrl[act1] = val1
+    data.ctrl[act2] = val2
+    data.ctrl[act3] = val3
+
+def MoveOneLeg(id, val):
+    data.ctrl[id] = val
+    
+
+"""
+What elapsed is:
+
+elapsed = time.time() - phase_start
+
+if elapsed >= (PERIOD*2):
+    phase_start = time.time()
+    elapsed = 0
+    start = (start % 2) + 1
+"""
+
+def WiggleInPlace(elapsed):
+    """ Coolness factor """
+    
+    # side1 hip
+    hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
+    
+    # side2 hip
+    grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + HIP_PER)/HIP_PER))
+    
+    # right side
+    MoveOneLeg(hip1_id, hip_target)
+    MoveOneLeg(hip3_id, hip_target)
+    MoveOneLeg(hip5_id, hip_target)
+    
+    # left side
+    MoveOneLeg(hip2_id, grounded_hip_target)
+    MoveOneLeg(hip4_id, grounded_hip_target)
+    MoveOneLeg(hip6_id, grounded_hip_target)
+    
+
+def DutyCycle(elapsed, phase_offset=0.0):
+    """
+    Returns (knee_lift, hip_angle) for a leg with a given phase offset.
+    knee_lift is 0 when grounded, 1 when fully lifted.
+    """
+    
+    # normalize time to [0, 1) within this period, with offset
+    t = ((elapsed - phase_offset) % PERIOD) / PERIOD  # 0.0 to 1.0
+
+    # --- KNEE: only lift during swing phase ---
+    if t < DUTY_CYCLE:
+        # swing phase: raise and lower using a half-cosine bump
+        knee_lift = 0.5 * (1 - np.cos(np.pi * t / DUTY_CYCLE))
+    else:
+        # stance phase: firmly on ground
+        knee_lift = 0.0
+
+    # --- HIP: swing forward during swing, return during stance ---
+    if t < DUTY_CYCLE:
+        # swing phase: hip moves forward (full HIP_SWING range)
+        hip_angle = HIP_SWING * 0.5 * np.cos(np.pi * t / DUTY_CYCLE)
+    else:
+        # stance phase: hip returns smoothly backward
+        t_stance = (t - DUTY_CYCLE) / (1.0 - DUTY_CYCLE)  # 0 to 1
+        hip_angle = -HIP_SWING * 0.5 * np.cos(np.pi * t_stance)
+
+    return knee_lift, hip_angle
+
+def RotateClockwise(elapsed):
+    # Group A: legs 1, 3, 5 — swing phase starts at t=0
+    knee_a, hip_a = DutyCycle(elapsed, phase_offset=0.0)
+
+    # Group B: legs 2, 4, 6 — offset by half period
+    knee_b, hip_b = DutyCycle(elapsed, phase_offset=PERIOD * 0.5)
+
+    # right side
+    MoveOneLeg(leg1_knee_id,  knee_a * LEG_UP)
+    MoveOneLeg(leg3_knee_id,  knee_a * LEG_UP)
+    MoveOneLeg(leg5_knee_id, -knee_a * LEG_UP)  # mirrored
+
+    MoveOneLeg(hip1_id, hip_a)
+    MoveOneLeg(hip3_id, hip_a)
+    MoveOneLeg(hip5_id, hip_a)
+
+    # left side
+    MoveOneLeg(leg2_knee_id,  knee_b * LEG_UP)
+    MoveOneLeg(leg4_knee_id, -knee_b * LEG_UP)  # mirrored
+    MoveOneLeg(leg6_knee_id, -knee_b * LEG_UP)  # mirrored
+
+    MoveOneLeg(hip2_id, hip_b)
+    MoveOneLeg(hip4_id, hip_b)
+    MoveOneLeg(hip6_id, hip_b)
+    
+def RotateCCW(elapsed):
+    
+    
+    
+    pass
+
+
+def Forward(elapsed):
+    
+    
+    
+    pass
+
+# =============================================================================
 # Run MuJoCo viewer
 # =============================================================================
 with mujoco.viewer.launch_passive(model, data) as viewer:
@@ -98,65 +171,28 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
 
     # https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation 
 
-    # Set the mass
-    # model.body_mass[leg_id] = MASS
-    # model.body_mass[leg2_id] = MASS
-    # print(model.body_mass)
+    # Set the masses
+    model.body_mass[body("leg1")] = LEG_MASS
+    model.body_mass[body("leg2")] = LEG_MASS
+    model.body_mass[body("leg3")] = LEG_MASS
+    model.body_mass[body("leg4")] = LEG_MASS
+    model.body_mass[body("leg5")] = LEG_MASS
+    model.body_mass[body("leg6")] = LEG_MASS
     
-    # print(model.body_mass)
+    model.body_mass[body("torso")] = TORSO_MASS
+    print(model.body_mass)
     
-    order_move = []
-    start = 1
 
-    
     while viewer.is_running():
         elapsed = time.time() - phase_start
         
         if elapsed >= (PERIOD*2):
             phase_start = time.time()
             elapsed = 0
-            start = (start % 6) + 1  # cycles 1→2→3→4→5→6→1
         
-        if start == 1:
-            swing = HIP1_swing
-            leg_id = leg1_knee_id
-            hip_id = hip1_id
-            
-        elif start == 2:
-            swing = HIP2_swing
-            leg_id = leg2_knee_id
-            hip_id = hip2_id
-            
-        elif start == 3:
-            swing = HIP3_swing
-            leg_id = leg3_knee_id
-            hip_id = hip3_id
-            
-        elif start == 4:
-            swing = HIP4_swing
-            leg_id = leg4_knee_id
-            hip_id = hip4_id
-            
-        elif start == 5:
-            swing = HIP5_swing
-            leg_id = leg5_knee_id
-            hip_id = hip5_id
-            
-        elif start == 6:
-            swing = HIP6_swing
-            leg_id = leg6_knee_id
-            hip_id = hip6_id
-
-        # right side, left side same except multiply by -1
-        knee_target = NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
-        hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
-        
-        if start == 4 or start == 5 or start == 6:
-            knee_target *= -1
+        WiggleInPlace(elapsed)
+        # RotateClockwise(elapsed)
     
-        data.ctrl[leg_id] = knee_target
-        data.ctrl[hip_id] = hip_target
-
         mj.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
@@ -164,8 +200,3 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
 
 # to run script: 
 # mjpython hexapod_gait_simulator.py
-
-
-# print("range:", model.actuator_ctrlrange[leg1_knee_id])
-# print("ctrl:", data.ctrl[leg1_knee_id])
-# print("force:", data.actuator_force[leg1_knee_id])

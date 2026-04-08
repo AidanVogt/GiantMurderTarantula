@@ -21,7 +21,7 @@ leg6 = GMTIno("leg6", 0x15)
 bus.addDevices(leg1)
 # bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
 print([d for d in bus.devices.keys()])
-print([d.address for d in bus.devices.values()])
+print([hex(d.address) for d in bus.devices.values()])
 print(leg1.bus)
 
 # main loop for converting joystick to arduino-side commands
