@@ -32,6 +32,8 @@ HIP_NEUTRAL = 0
 HIP_PER = 5
 HIP_SWING = np.radians(40)
 
+DUTY_CYCLE = 0.4
+
 # actuators
 leg1_knee_id = act("knee1_act")
 hip1_id = act("hip1_act")
@@ -93,17 +95,66 @@ def WiggleInPlace(elapsed):
     MoveOneLeg(hip4_id, grounded_hip_target)
     MoveOneLeg(hip6_id, grounded_hip_target)
     
-"""
-What elapsed is:
-phase_start is the initial time.time()
 
-elapsed = time.time() - phase_start
+def DutyCycle(elapsed, phase_offset=0.0):
+    """
+    Returns (knee_lift, hip_angle) for a leg with a given phase offset.
+    knee_lift is 0 when grounded, 1 when fully lifted.
+    """
+    
+    # normalize time to [0, 1) within this period, with offset
+    t = ((elapsed - phase_offset) % PERIOD) / PERIOD  # 0.0 to 1.0
 
-if elapsed >= (PERIOD*2):
-    phase_start = time.time()
-    elapsed = 0
+    # --- KNEE: only lift during swing phase ---
+    if t < DUTY_CYCLE:
+        # swing phase: raise and lower using a half-cosine bump
+        knee_lift = 0.5 * (1 - np.cos(np.pi * t / DUTY_CYCLE))
+    else:
+        # stance phase: firmly on ground
+        knee_lift = 0.0
 
-"""
+    # --- HIP: swing forward during swing, return during stance ---
+    if t < DUTY_CYCLE:
+        # swing phase: hip moves forward (full HIP_SWING range)
+        hip_angle = HIP_SWING * 0.5 * np.cos(np.pi * t / DUTY_CYCLE)
+    else:
+        # stance phase: hip returns smoothly backward
+        t_stance = (t - DUTY_CYCLE) / (1.0 - DUTY_CYCLE)  # 0 to 1
+        hip_angle = -HIP_SWING * 0.5 * np.cos(np.pi * t_stance)
+
+    return knee_lift, hip_angle
+
+def RotateClockwise(elapsed):
+    # Group A: legs 1, 3, 5 — swing phase starts at t=0
+    knee_a, hip_a = DutyCycle(elapsed, phase_offset=0.0)
+
+    # Group B: legs 2, 4, 6 — offset by half period
+    knee_b, hip_b = DutyCycle(elapsed, phase_offset=PERIOD * 0.5)
+
+    # Right side (group A)
+    MoveOneLeg(leg1_knee_id,  knee_a * LEG_UP)
+    MoveOneLeg(leg3_knee_id,  knee_a * LEG_UP)
+    MoveOneLeg(leg5_knee_id, -knee_a * LEG_UP)  # mirrored
+
+    MoveOneLeg(hip1_id, hip_a)
+    MoveOneLeg(hip3_id, hip_a)
+    MoveOneLeg(hip5_id, hip_a)
+
+    # Left side (group B)
+    MoveOneLeg(leg2_knee_id,  knee_b * LEG_UP)
+    MoveOneLeg(leg4_knee_id, -knee_b * LEG_UP)  # mirrored
+    MoveOneLeg(leg6_knee_id, -knee_b * LEG_UP)  # mirrored
+
+    MoveOneLeg(hip2_id, hip_b)
+    MoveOneLeg(hip4_id, hip_b)
+    MoveOneLeg(hip6_id, hip_b)
+    
+def RotateCCW(elapsed):
+    
+    
+    
+    pass
+
     
 def Rotate(elapsed):
     # knee up is fine
@@ -175,31 +226,32 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         knee2_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*(elapsed + (HIP_PER/2))/(HIP_PER) + .1))
         
         # WiggleInPlace(elapsed)
-    
-        # MoveTripod(act1, act2, act3, val1, val2, val3)
-        # MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, hip_target)
+        RotateClockwise(elapsed)
+
         
-        # right side (leg movements)
-        MoveOneLeg(leg1_knee_id, knee_target)
-        MoveOneLeg(hip1_id, hip_target)
+        # # right side (leg movements)
+        # MoveOneLeg(leg1_knee_id, knee_target)
+        # MoveOneLeg(hip1_id, hip_target)
         
         
-        MoveOneLeg(leg3_knee_id, knee_target)
-        MoveOneLeg(hip3_id, hip_target)
+        # MoveOneLeg(leg3_knee_id, knee_target)
+        # MoveOneLeg(hip3_id, hip_target)
 
 
-        MoveOneLeg(leg5_knee_id, -knee_target)
-        MoveOneLeg(hip5_id, hip_target)
+        # MoveOneLeg(leg5_knee_id, -knee_target)
+        # MoveOneLeg(hip5_id, hip_target)
         
-        # grounded legs
-        MoveOneLeg(leg2_knee_id, knee2_target)
-        MoveOneLeg(leg4_knee_id, -knee2_target)
-        MoveOneLeg(leg6_knee_id, -knee2_target)
+        # # grounded legs
+        # MoveOneLeg(leg2_knee_id, knee2_target)
+        # MoveOneLeg(leg4_knee_id, -knee2_target)
+        # MoveOneLeg(leg6_knee_id, -knee2_target)
         
         
-        MoveOneLeg(hip2_id, grounded_hip_target)
-        MoveOneLeg(hip4_id, grounded_hip_target)
-        MoveOneLeg(hip6_id, grounded_hip_target)
+        # MoveOneLeg(hip2_id, grounded_hip_target)
+        # MoveOneLeg(hip4_id, grounded_hip_target)
+        # MoveOneLeg(hip6_id, grounded_hip_target)
+        
+        
         
         
         # # right side, left side same except multiply by -1
