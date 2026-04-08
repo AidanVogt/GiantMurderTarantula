@@ -94,7 +94,8 @@ class I2CBus:
         return finished_devices
     
     def WriteByte(self, address, data):
-        self.bus.write_byte(address, data)
+
+        self.bus.write_byte(address, 5)
         
     def ReadByte(self, address):
         return self.bus.read_byte(address)
