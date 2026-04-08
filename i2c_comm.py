@@ -29,6 +29,18 @@ class Instruction:
                 break
             num += 1
             
+    def recallCommand(self):
+        
+        legs = sorted(self.bus.devices.keys())
+        num = len(legs)
+        print("Num devices connected: ", num)
+        
+        for i in range(num):
+            cmd = self.bus.devices[legs[i]].readI2C()
+            
+            print(f"Command sent to {self.bus.devices[legs[i]].name}: {cmd}")
+        
+            
     def checkFinished(self):
         print("Checking if done")
         
@@ -120,9 +132,8 @@ def testI2C(bus):
     test2 = Instruction(bus, b)
     
     test.sendToLegs()
-    test.checkFinished()
-    
-    print("Sent first instruction set")
+    test.recallCommand()
+    print("Finish first test - copy instruction that was sent")
     
     test2.sendToLegs()
     test2.checkFinished()

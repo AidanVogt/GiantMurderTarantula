@@ -7,19 +7,17 @@ import time
 model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)
 
-# XML REF
-# Actuators 
-# 0-5: hip1, hip2, hip3, hip4, hip5, hip6
-# 6-11: knee1, knee2, knee3, knee4, knee5, knee6
-
+# helpers
 def act(name):
     return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
 
 def body(name):
     return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
 
+# =============================================================================
+# Constants and actuators
+# =============================================================================
 
-# testing
 # mass in kg
 LEG_MASS = 2
 TORSO_MASS = 70
@@ -31,7 +29,7 @@ PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 # side-to-side leg movement
 HIP_NEUTRAL = 0
-HIP_PER = 10
+HIP_PER = 5
 HIP_SWING = np.radians(40)
 
 # actuators
@@ -53,6 +51,9 @@ hip5_id = act("hip5_act")
 leg6_knee_id = act("knee6_act")
 hip6_id = act("hip6_act")
 
+# =============================================================================
+# Gait Functions
+# =============================================================================
 
 def MoveTripod(act1, act2, act3, val1, val2, val3):
     data.ctrl[act1] = val1
@@ -62,6 +63,78 @@ def MoveTripod(act1, act2, act3, val1, val2, val3):
 def MoveOneLeg(id, val):
     data.ctrl[id] = val
     
+
+"""
+What elapsed is:
+
+elapsed = time.time() - phase_start
+
+if elapsed >= (PERIOD*2):
+    phase_start = time.time()
+    elapsed = 0
+    start = (start % 2) + 1
+"""
+
+def WiggleInPlace(elapsed):
+    
+    # side1 hip
+    hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
+    
+    # side2 hip
+    grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + HIP_PER)/HIP_PER))
+    
+    # right side
+    MoveOneLeg(hip1_id, hip_target)
+    MoveOneLeg(hip3_id, hip_target)
+    MoveOneLeg(hip5_id, hip_target)
+    
+    # left side
+    MoveOneLeg(hip2_id, grounded_hip_target)
+    MoveOneLeg(hip4_id, grounded_hip_target)
+    MoveOneLeg(hip6_id, grounded_hip_target)
+    
+"""
+What elapsed is:
+phase_start is the initial time.time()
+
+elapsed = time.time() - phase_start
+
+if elapsed >= (PERIOD*2):
+    phase_start = time.time()
+    elapsed = 0
+
+"""
+    
+def Rotate(elapsed):
+    # knee up is fine
+    knee_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/HIP_PER) + .1)
+    
+    # hip swing
+    hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
+    
+    # grounded hip swing
+    grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed - (HIP_PER/2))/HIP_PER))
+    knee2_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*(elapsed - (HIP_PER/2))/(HIP_PER) + .1))
+    
+    # right side (leg movements)
+    MoveOneLeg(leg1_knee_id, knee_target)
+    MoveOneLeg(leg3_knee_id, knee_target)
+    MoveOneLeg(leg5_knee_id, -knee_target)
+    
+    MoveOneLeg(hip1_id, hip_target)
+    MoveOneLeg(hip3_id, hip_target)
+    MoveOneLeg(hip5_id, hip_target)
+
+    # grounded legs
+    MoveOneLeg(leg2_knee_id, knee2_target)
+    MoveOneLeg(leg4_knee_id, -knee2_target)
+    MoveOneLeg(leg6_knee_id, -knee2_target)
+    
+    MoveOneLeg(hip2_id, grounded_hip_target)
+    MoveOneLeg(hip4_id, grounded_hip_target)
+    MoveOneLeg(hip6_id, grounded_hip_target)
+    
+
 # =============================================================================
 # Run MuJoCo viewer
 # =============================================================================
@@ -98,40 +171,10 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
         
         # grounded hip swing
-        grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + HIP_PER)/HIP_PER))
-
-    
-        if start == 1:
-            
-            # values for KNEE movement
-            act1 = leg1_knee_id
-            act2 = leg3_knee_id
-            act3 = leg5_knee_id
-            
-            val1 = knee_target
-            val2 = knee_target
-            val3 = -knee_target
-            
-            # values for HIP movement
-            hip_act1 = hip1_id
-            hip_act2 = hip3_id
-            hip_act3 = hip5_id
-
-
-        elif start == 2:
-            act1 = leg4_knee_id
-            act2 = leg6_knee_id
-            act3 = leg2_knee_id
-            
-            val1 = -knee_target
-            val2 = -knee_target
-            val3 = knee_target
-            
-            # values for HIP movement
-            hip_act1 = hip4_id
-            hip_act2 = hip6_id
-            hip_act3 = hip2_id
+        grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + (HIP_PER/2))/HIP_PER))
+        knee2_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*(elapsed + (HIP_PER/2))/(HIP_PER) + .1))
         
+        # WiggleInPlace(elapsed)
     
         # MoveTripod(act1, act2, act3, val1, val2, val3)
         # MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, hip_target)
@@ -149,9 +192,14 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         MoveOneLeg(hip5_id, hip_target)
         
         # grounded legs
+        MoveOneLeg(leg2_knee_id, knee2_target)
+        MoveOneLeg(leg4_knee_id, -knee2_target)
+        MoveOneLeg(leg6_knee_id, -knee2_target)
+        
+        
         MoveOneLeg(hip2_id, grounded_hip_target)
         MoveOneLeg(hip4_id, grounded_hip_target)
-        MoveOneLeg(hip5_id, grounded_hip_target)
+        MoveOneLeg(hip6_id, grounded_hip_target)
         
         
         # # right side, left side same except multiply by -1
