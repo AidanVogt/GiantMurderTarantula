@@ -95,7 +95,7 @@ class I2CBus:
     
     def WriteByte(self, address, data):
 
-        self.bus.write_byte(address, 5)
+        self.bus.write_byte(address, data)
         
     def ReadByte(self, address):
         return self.bus.read_byte(address)
