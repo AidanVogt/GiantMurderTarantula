@@ -78,6 +78,7 @@ if elapsed >= (PERIOD*2):
 """
 
 def WiggleInPlace(elapsed):
+    """ Coolness factor """
     
     # side1 hip
     hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
@@ -131,7 +132,7 @@ def RotateClockwise(elapsed):
     # Group B: legs 2, 4, 6 — offset by half period
     knee_b, hip_b = DutyCycle(elapsed, phase_offset=PERIOD * 0.5)
 
-    # Right side (group A)
+    # right side
     MoveOneLeg(leg1_knee_id,  knee_a * LEG_UP)
     MoveOneLeg(leg3_knee_id,  knee_a * LEG_UP)
     MoveOneLeg(leg5_knee_id, -knee_a * LEG_UP)  # mirrored
@@ -140,7 +141,7 @@ def RotateClockwise(elapsed):
     MoveOneLeg(hip3_id, hip_a)
     MoveOneLeg(hip5_id, hip_a)
 
-    # Left side (group B)
+    # left side
     MoveOneLeg(leg2_knee_id,  knee_b * LEG_UP)
     MoveOneLeg(leg4_knee_id, -knee_b * LEG_UP)  # mirrored
     MoveOneLeg(leg6_knee_id, -knee_b * LEG_UP)  # mirrored
@@ -155,36 +156,12 @@ def RotateCCW(elapsed):
     
     pass
 
-    
-def Rotate(elapsed):
-    # knee up is fine
-    knee_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/HIP_PER) + .1)
-    
-    # hip swing
-    hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
-    
-    # grounded hip swing
-    grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed - (HIP_PER/2))/HIP_PER))
-    knee2_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*(elapsed - (HIP_PER/2))/(HIP_PER) + .1))
-    
-    # right side (leg movements)
-    MoveOneLeg(leg1_knee_id, knee_target)
-    MoveOneLeg(leg3_knee_id, knee_target)
-    MoveOneLeg(leg5_knee_id, -knee_target)
-    
-    MoveOneLeg(hip1_id, hip_target)
-    MoveOneLeg(hip3_id, hip_target)
-    MoveOneLeg(hip5_id, hip_target)
 
-    # grounded legs
-    MoveOneLeg(leg2_knee_id, knee2_target)
-    MoveOneLeg(leg4_knee_id, -knee2_target)
-    MoveOneLeg(leg6_knee_id, -knee2_target)
+def Forward(elapsed):
     
-    MoveOneLeg(hip2_id, grounded_hip_target)
-    MoveOneLeg(hip4_id, grounded_hip_target)
-    MoveOneLeg(hip6_id, grounded_hip_target)
     
+    
+    pass
 
 # =============================================================================
 # Run MuJoCo viewer
@@ -205,7 +182,6 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
     model.body_mass[body("torso")] = TORSO_MASS
     print(model.body_mass)
     
-    start = 1
 
     while viewer.is_running():
         elapsed = time.time() - phase_start
@@ -213,57 +189,10 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         if elapsed >= (PERIOD*2):
             phase_start = time.time()
             elapsed = 0
-            start = (start % 2) + 1
         
-        # knee up is fine
-        knee_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/HIP_PER) + .1)
-        
-        # hip swing
-        hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
-        
-        # grounded hip swing
-        grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + (HIP_PER/2))/HIP_PER))
-        knee2_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*(elapsed + (HIP_PER/2))/(HIP_PER) + .1))
-        
-        # WiggleInPlace(elapsed)
-        RotateClockwise(elapsed)
-
-        
-        # # right side (leg movements)
-        # MoveOneLeg(leg1_knee_id, knee_target)
-        # MoveOneLeg(hip1_id, hip_target)
-        
-        
-        # MoveOneLeg(leg3_knee_id, knee_target)
-        # MoveOneLeg(hip3_id, hip_target)
-
-
-        # MoveOneLeg(leg5_knee_id, -knee_target)
-        # MoveOneLeg(hip5_id, hip_target)
-        
-        # # grounded legs
-        # MoveOneLeg(leg2_knee_id, knee2_target)
-        # MoveOneLeg(leg4_knee_id, -knee2_target)
-        # MoveOneLeg(leg6_knee_id, -knee2_target)
-        
-        
-        # MoveOneLeg(hip2_id, grounded_hip_target)
-        # MoveOneLeg(hip4_id, grounded_hip_target)
-        # MoveOneLeg(hip6_id, grounded_hip_target)
-        
-        
-        
-        
-        # # right side, left side same except multiply by -1
-        # knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
-        # hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
-        
-        # if start == 4 or start == 5 or start == 6:
-        #     knee_target *= -1
+        WiggleInPlace(elapsed)
+        # RotateClockwise(elapsed)
     
-        # data.ctrl[leg_id] = knee_target
-        # data.ctrl[hip_id] = hip_target
-
         mj.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
@@ -271,8 +200,3 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
 
 # to run script: 
 # mjpython hexapod_gait_simulator.py
-
-
-# print("range:", model.actuator_ctrlrange[leg1_knee_id])
-# print("ctrl:", data.ctrl[leg1_knee_id])
-# print("force:", data.actuator_force[leg1_knee_id])
