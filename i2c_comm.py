@@ -82,7 +82,7 @@ class I2CBus:
                 print(response, "response")
                 
                 # TODO: testing response is done or not
-                if response == 211:
+                if response == 1:
                     finished_devices += 1
                     print(f"{device.name} address {device.address} finished")
                 
@@ -94,7 +94,6 @@ class I2CBus:
         return finished_devices
     
     def WriteByte(self, address, data):
-
         self.bus.write_byte(address, data)
         
     def ReadByte(self, address):
