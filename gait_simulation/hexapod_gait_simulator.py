@@ -4,7 +4,6 @@ import numpy as np
 import time
 
 # load hexapod model from config
-# model = mj.MjModel.from_xml_path("hexapod.xml")
 model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)
 
@@ -19,18 +18,6 @@ def act(name):
 def body(name):
     return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
 
-# specify which legs move in tandem
-tripod_group1 = [
-    (act("hip1_act"), act("knee1_act")), # front right
-    (act("hip3_act"), act("knee3_act")), # back right
-    (act("hip5_act"), act("knee5_act")), # middle left
-]
-tripod_group2 = [
-    (act("hip2_act"), act("knee2_act")),   # front left
-    (act("hip4_act"), act("knee4_act")),   # mid right
-    (act("hip6_act"), act("knee6_act")),   # back left
-]
-
 
 # testing
 # mass in kg
@@ -39,13 +26,13 @@ TORSO_MASS = 70
 
 # upward leg movement (same for all legs)
 KNEE_NEUTRAL = 0
-LEG_UP = 150 # amount to move from baseline
+LEG_UP = 100 # amount to move from baseline
 PERIOD = 5.0 # seconds — time for one full up-down cycle
 
 # side-to-side leg movement
 HIP_NEUTRAL = 0
 HIP_PER = 10
-HIP_SWING = np.radians(60)
+HIP_SWING = np.radians(40)
 
 # actuators
 leg1_knee_id = act("knee1_act")
@@ -105,12 +92,15 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             start = (start % 2) + 1
         
         # knee up is fine
-        knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
+        knee_target = LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/HIP_PER) + .1)
         
         # hip swing
-        hip_target = HIP_NEUTRAL + (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER))
-        # hip_target = 0.5(HIP_SWING)
+        hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
         
+        # grounded hip swing
+        grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + HIP_PER)/HIP_PER))
+
+    
         if start == 1:
             
             # values for KNEE movement
@@ -144,10 +134,26 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         
     
         # MoveTripod(act1, act2, act3, val1, val2, val3)
-        # MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, -hip_target)
-        MoveOneLeg(leg6_knee_id, -150)
-        MoveOneLeg(hip6_id, hip_target)
+        # MoveTripod(hip_act1, hip_act2, hip_act3, hip_target, hip_target, hip_target)
+        
+        # right side (leg movements)
+        MoveOneLeg(leg1_knee_id, knee_target)
+        MoveOneLeg(hip1_id, hip_target)
+        
+        
+        MoveOneLeg(leg3_knee_id, knee_target)
+        MoveOneLeg(hip3_id, hip_target)
 
+
+        MoveOneLeg(leg5_knee_id, -knee_target)
+        MoveOneLeg(hip5_id, hip_target)
+        
+        # grounded legs
+        MoveOneLeg(hip2_id, grounded_hip_target)
+        MoveOneLeg(hip4_id, grounded_hip_target)
+        MoveOneLeg(hip5_id, grounded_hip_target)
+        
+        
         # # right side, left side same except multiply by -1
         # knee_target = KNEE_NEUTRAL + LEG_UP * .5 * (1 - np.cos(2*np.pi*elapsed/PERIOD) + .1)
         # hip_target = HIPN + swing * .5 * (np.sin(2*np.pi*elapsed/HIP_PER))
