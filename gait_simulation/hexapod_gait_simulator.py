@@ -2,6 +2,7 @@ import mujoco as mj
 import mujoco.viewer
 import numpy as np
 import time
+import sys
 
 # load hexapod model from config
 model = mj.MjModel.from_xml_path("hexapod.xml")
@@ -22,14 +23,9 @@ def body(name):
 LEG_MASS = 2
 TORSO_MASS = 70
 
-# upward leg movement (same for all legs)
-KNEE_NEUTRAL = 0
-LEG_UP = 100 # amount to move from baseline
-PERIOD = 5.0 # seconds — time for one full up-down cycle
-
-# side-to-side leg movement
-HIP_NEUTRAL = 0
-HIP_PER = 5
+# seconds — time for one full up-down cycle
+PERIOD = 5.0 
+LEG_UP = 100 # upward leg movement (same for all legs)
 HIP_SWING = np.radians(40)
 
 DUTY_CYCLE = 0.4
@@ -66,25 +62,14 @@ def MoveOneLeg(id, val):
     data.ctrl[id] = val
     
 
-"""
-What elapsed is:
-
-elapsed = time.time() - phase_start
-
-if elapsed >= (PERIOD*2):
-    phase_start = time.time()
-    elapsed = 0
-    start = (start % 2) + 1
-"""
-
 def WiggleInPlace(elapsed):
     """ Coolness factor """
     
     # side1 hip
-    hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/HIP_PER) + .1)
+    hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*elapsed/PERIOD) + .1)
     
     # side2 hip
-    grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + HIP_PER)/HIP_PER))
+    grounded_hip_target = (HIP_SWING * 0.5) * (np.sin(2*np.pi*(elapsed + PERIOD)/PERIOD))
     
     # right side
     MoveOneLeg(hip1_id, hip_target)
@@ -125,11 +110,11 @@ def DutyCycle(elapsed, phase_offset=0.0):
 
     return knee_lift, hip_angle
 
-def RotateClockwise(elapsed):
-    # Group A: legs 1, 3, 5 — swing phase starts at t=0
+def Rotate(elapsed):
+    # legs 1, 3, 5 — swing phase starts at t=0
     knee_a, hip_a = DutyCycle(elapsed, phase_offset=0.0)
 
-    # Group B: legs 2, 4, 6 — offset by half period
+    # legs 2, 4, 6 — offset by half period
     knee_b, hip_b = DutyCycle(elapsed, phase_offset=PERIOD * 0.5)
 
     # right side
@@ -150,18 +135,43 @@ def RotateClockwise(elapsed):
     MoveOneLeg(hip4_id, hip_b)
     MoveOneLeg(hip6_id, hip_b)
     
-def RotateCCW(elapsed):
-    
-    
-    
-    pass
 
+def Walk(elapsed):
 
-def Forward(elapsed):
-    
-    
-    
-    pass
+    # legs 1, 3, 5
+    knee_a, hip_a = DutyCycle(elapsed, phase_offset=0.0)
+
+    # legs 2, 4, 6 — half period offset
+    knee_b, hip_b = DutyCycle(elapsed, phase_offset=PERIOD * 0.5)
+
+    # --- Group 1 ---
+    MoveOneLeg(leg1_knee_id,  knee_a * LEG_UP)
+    MoveOneLeg(leg3_knee_id,  knee_a * LEG_UP)
+    MoveOneLeg(leg5_knee_id,  -knee_a * LEG_UP)
+
+    MoveOneLeg(hip1_id,  hip_a)
+    MoveOneLeg(hip3_id,  hip_a)
+    MoveOneLeg(hip5_id,  -hip_a)
+
+    # --- Group 2 ---
+    MoveOneLeg(leg2_knee_id,  knee_b * LEG_UP)
+    MoveOneLeg(leg4_knee_id,  -knee_b * LEG_UP)
+    MoveOneLeg(leg6_knee_id,  -knee_b * LEG_UP)
+
+    MoveOneLeg(hip2_id,  hip_b)
+    MoveOneLeg(hip4_id, -hip_b)
+    MoveOneLeg(hip6_id, -hip_b)
+
+# =============================================================================
+# Argument parsing
+# =============================================================================
+VALID_MODES = {"walk", "fun", "rotate"}
+ 
+if len(sys.argv) < 2 or sys.argv[1] not in VALID_MODES:
+    print(f"Usage: mjpython main.py <{'|'.join(VALID_MODES)}>")
+    sys.exit(1)
+ 
+mode = sys.argv[1]
 
 # =============================================================================
 # Run MuJoCo viewer
@@ -189,14 +199,22 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         if elapsed >= (PERIOD*2):
             phase_start = time.time()
             elapsed = 0
-        
-        WiggleInPlace(elapsed)
-        # RotateClockwise(elapsed)
-    
+
+            
+        ### PICK WHICH MODE TO VIEW
+
+        if mode == "walk":
+            Walk(elapsed)
+        elif mode == "fun":
+            WiggleInPlace(elapsed)
+        elif mode == "rotate":
+            Rotate(elapsed)
+ 
         mj.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
         
 
 # to run script: 
-# mjpython hexapod_gait_simulator.py
+# mjpython hexapod_gait_simulator.py walk
+# (other options are fun or rotate)

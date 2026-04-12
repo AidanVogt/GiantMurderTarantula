@@ -1,4 +1,4 @@
-from gait_and_homing import TestI2CJoystick, KneeOnly
+from gait_and_homing import TestI2CJoystick, TestOneLeg
 from i2c_comm import I2CBus, GMTIno
 from joystick import GMTJoystick
 import time
@@ -40,7 +40,7 @@ def joystickLoop():
             x, y = controls
             
             # convert x and y signal to gait
-            KneeOnly(x, y, bus)
+            TestOneLeg(x, y, bus)
 
         time.sleep(2)
         
