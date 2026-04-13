@@ -1,7 +1,7 @@
 from turtle import clear
 
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, GAIT_HOME
 import time
 
 # simpler method
@@ -21,9 +21,13 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     for inst in gait_type:
         MoveLegs(bus, inst)
 
-def TestI2CJoystick(x: int, y:int, bus: I2CBus):
+def TestI2CJoystick(x: int, y:int, home: bool, bus: I2CBus):
     
-    if x == 1:
+    if home:
+        print("HOMING")
+        CompleteOneMovementCycle(gaits[GAIT_HOME], bus)
+    
+    elif x == 1:
         print("Turn right")
         CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     

@@ -1,6 +1,5 @@
 import smbus2
 from typing import Tuple
-from gaits import ACTION_NONE
 
 # Sending instructions from the pi to the arduinos
 # Gait planning done at highest level
@@ -27,6 +26,7 @@ class Instruction:
             if len(legs) == 1:
                 self.bus.devices[legs[num]].sendData(inst)
                 break
+            
             num += 1
             
     def recallCommand(self):

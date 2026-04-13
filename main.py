@@ -36,10 +36,10 @@ def joystickLoop():
 
         if controls is not None:
             
-            # get controls
-            x, y, a_btn = controls
+            # get controls (y btn for coolness factor)
+            x, y, a_btn, y_btn = controls
             
-            print(x, y, a_btn)
+            print(x, y, a_btn, y_btn)
             
             # convert x and y signal to gait
             # TestOneLeg(x, y, bus)
