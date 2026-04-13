@@ -42,7 +42,8 @@ def TestI2CJoystick(x: int, y:int, bus: I2CBus):
         CompleteOneMovementCycle(gaits[GAIT_BACKWARD], bus)
         
         
-def KneeOnly(x: int, y: int, bus: I2CBus):
+def TestOneLeg(x: int, y: int, bus: I2CBus):
+    
     if y == 1:
         print("Move up")
         inst = (3, 0, 0, 0, 0, 0)
@@ -53,6 +54,17 @@ def KneeOnly(x: int, y: int, bus: I2CBus):
         print("Move down")
         inst = (4, 0, 0, 0, 0, 0)
         MoveLegs(bus, inst)
+        
+    elif x == 1:
+        print("Move right")
+        inst = (1, 0, 0, 0, 0 ,0)
+        MoveLegs(bus, inst)
+    
+    elif x == -1:
+        print("Move left")
+        inst = (2, 0, 0, 0, 0 ,0)
+        MoveLegs(bus, inst)
+        
     
 
 
