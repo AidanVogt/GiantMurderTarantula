@@ -1,8 +1,11 @@
-from gait_and_homing import TestI2CJoystick, TestOneLeg
+from gait_and_homing import JoystickToGait, TestOneLeg
 from i2c_comm import I2CBus, GMTIno
 from joystick import GMTJoystick
 import time
 
+"""
+Main loop for hexapod control. Continuously monitor the joystick for input and use higher level functions to convert the joystick input to gait commands
+"""
 
 # init bus and controller
 print("Initializing I2C Bus and controller")
@@ -41,10 +44,14 @@ def joystickLoop():
             
             print(x, y, a_btn, y_btn)
             
-            # convert x and y signal to gait
+            # convert x and y signal to move single leg
             # TestOneLeg(x, y, bus)
+            
+            # converts user input to gait
+            JoystickToGait(x, y, a_btn, y_btn, bus)
 
         time.sleep(2)
-        
+    
+# constantly run joystick loop    
 joystickLoop()
 

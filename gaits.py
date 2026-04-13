@@ -1,5 +1,9 @@
 """
-Gait control bytes
+Gait control bytes - hardcoded
+
+FORWARD/BACKWARD MOVEMENT
+Each movement "cycle" is divided into 10 steps, where the legs pass through the neutral starting point twice. The hexapod primarily uses a tripod gait to move. Since there are 6 legs, three will move up at any given time while the other 3 remain on the ground. The tripod groups are separated by a half period, meaning every 5 steps, the legs in the air will alternate. 
+
 """
 
 # ACTIONS (forward/backward mean hip movement, up/down mean knee movement)
@@ -16,11 +20,7 @@ GAIT_BACKWARD = 1
 GAIT_TURN_LEFT = 2
 GAIT_TURN_RIGHT = 3
 GAIT_HOME = 5
-
-# divide each cycle into 10 steps
-# tripod gait - steps separated by 1/2 period, which means 5 steps each
-# stance phase - grounded legs move hip motors backwards
-# lifting and lowering - no hip motor movement
+GAIT_COOL = 6
 
 gaits = {
     GAIT_FORWARD: [
@@ -102,11 +102,11 @@ gaits = {
         # home 3 legs at a time to prevent instability
         (ACTION_HOME, ACTION_NONE, ACTION_HOME, ACTION_NONE, ACTION_HOME, ACTION_NONE), 
         (ACTION_NONE, ACTION_HOME, ACTION_NONE, ACTION_HOME, ACTION_NONE, ACTION_HOME), 
-    ]
+    ],
     
-    # WIGGLE: [
-    #     (ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE)
-    #     (ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE)
-    # ],
+    GAIT_COOL: [
+        (ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE)
+        (ACTION_BACKWARD, ACTION_NONE, ACTION_BACKWARD, ACTION_NONE, ACTION_BACKWARD, ACTION_NONE)
+    ],
     
 }

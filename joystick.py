@@ -1,9 +1,10 @@
 import pygame
 import time
 
-# weird - for the raspberry pi connection, use axes 3 and 4 for
-# the right thumb joystick. 2 is the left trigger
-# NOTE - switched to the dpad for controls, easier to implement
+"""
+Joystick-specific functions for initialization and monitoring. Uses the pygame class to get specific inputs.
+NOTE - switched to the dpad for controls, easier to implement
+"""
 
 class GMTJoystick:
     def __init__(self):
