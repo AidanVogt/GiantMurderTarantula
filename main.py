@@ -37,10 +37,12 @@ def joystickLoop():
         if controls is not None:
             
             # get controls
-            x, y = controls
+            x, y, a_btn = controls
+            
+            print(x, y, a_btn)
             
             # convert x and y signal to gait
-            TestOneLeg(x, y, bus)
+            # TestOneLeg(x, y, bus)
 
         time.sleep(2)
         
