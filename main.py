@@ -46,13 +46,13 @@ def joystickLoop():
             print(x, y, a_btn, y_btn)
             
             # convert x and y signal to move single leg
-            TestOneLeg(x, y, bus)
+            # TestOneLeg(x, y, bus)
             
             # test i2c comm
             # testI2C(bus)
             
             # # converts user input to gait
-            # JoystickToGait(x, y, a_btn, y_btn, bus)
+            JoystickToGait(x, y, a_btn, y_btn, bus)
 
         time.sleep(2)
     
