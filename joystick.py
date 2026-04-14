@@ -1,9 +1,10 @@
 import pygame
 import time
 
-# weird - for the raspberry pi connection, use axes 3 and 4 for
-# the right thumb joystick. 2 is the left trigger
-# NOTE - switched to the dpad for controls, easier to implement
+"""
+Joystick-specific functions for initialization and monitoring. Uses the pygame class to get specific inputs.
+NOTE - switched to the dpad for controls, easier to implement
+"""
 
 class GMTJoystick:
     def __init__(self):
@@ -20,8 +21,7 @@ class GMTJoystick:
         self.connected = True
         
     def getControls(self):
-        # returns controls as x, y, bool where bool is True if the
-        # A button is pressed
+        # returns controls
             
         if not self.connected:
             return None
@@ -31,11 +31,12 @@ class GMTJoystick:
 
             dpad = self.j.get_hat(0)
             a_btn = bool(self.j.get_button(0))
+            y_btn = bool(self.j.get_button(3))
             
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
             
-            return (x, y, a_btn)
+            return (x, y, a_btn, y_btn)
 
         except Exception as e:
             self.connected = False

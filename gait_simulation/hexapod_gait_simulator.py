@@ -4,6 +4,10 @@ import numpy as np
 import time
 import sys
 
+"""
+Gait simulation using MuJoCo.
+"""
+
 # load hexapod model from config
 model = mj.MjModel.from_xml_path("hexapod.xml")
 data  = mj.MjData(model)

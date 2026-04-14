@@ -1,10 +1,15 @@
 import smbus2
 from typing import Tuple
-from gaits import ACTION_NONE
 
-# Sending instructions from the pi to the arduinos
-# Gait planning done at highest level
-# Get instruction from d-pad -> translate into a movement class (i.e. forward, backwards)
+"""
+Classes for sending instructions between the Pi and Arduinos.
+Instruction class - dictates a set of 6 instructions each sent to the individual Arduinos in the bus. Includes a method to directly send to the legs in the bus and check whether each instruction has been completed.
+
+I2CBus class - main class to keep track of all items in the bus, contains a polling function to read bytes from each device in the bus, includes read and write byte functions which use the smbus2 implementations of the bus 
+
+GMTIno class - used to represent a single Arduino, contains indentifiers such as the name and device address. These are the objects in the I2CBus
+"""
+
 
 class Instruction:
     def __init__(self, bus, instructions = Tuple[int, int, int, int, int, int]):
@@ -27,6 +32,7 @@ class Instruction:
             if len(legs) == 1:
                 self.bus.devices[legs[num]].sendData(inst)
                 break
+            
             num += 1
             
     def recallCommand(self):
@@ -79,9 +85,8 @@ class I2CBus:
 
             try:
                 response = device.readI2C()
-                print(response, "response")
+                print(f"response: {response}")
                 
-                # TODO: testing response is done or not
                 if response == 1:
                     finished_devices += 1
                     print(f"{device.name} address {device.address} finished")

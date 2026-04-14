@@ -1,8 +1,10 @@
-from turtle import clear
-
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, GAIT_HOME, GAIT_COOL
 import time
+
+"""
+Functions to handle the joystick to gait conversion and testing single legs.
+"""
 
 # simpler method
 # Decompose gait into instructions, modify code to send a single byte
@@ -21,9 +23,19 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     for inst in gait_type:
         MoveLegs(bus, inst)
 
-def TestI2CJoystick(x: int, y:int, bus: I2CBus):
+def JoystickToGait(x: int, y:int, home: bool, coolness: bool, bus: I2CBus):
     
-    if x == 1:
+    # handle button presses first
+    if home:
+        print("HOMING")
+        CompleteOneMovementCycle(gaits[GAIT_HOME], bus)
+        
+    elif coolness:
+        print("Wiggle/Coolness fct")
+        CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
+    
+    # handle d-pad inputs
+    elif x == 1:
         print("Turn right")
         CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     
@@ -56,12 +68,12 @@ def TestOneLeg(x: int, y: int, bus: I2CBus):
         MoveLegs(bus, inst)
         
     elif x == 1:
-        print("Move right")
+        print("Move fwd")
         inst = (1, 0, 0, 0, 0 ,0)
         MoveLegs(bus, inst)
     
     elif x == -1:
-        print("Move left")
+        print("Move back")
         inst = (2, 0, 0, 0, 0 ,0)
         MoveLegs(bus, inst)
         
