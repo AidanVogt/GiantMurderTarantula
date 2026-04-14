@@ -132,9 +132,14 @@ def testI2C(bus):
     a = tuple([i for i in range(len(bus.devices.items()))])
     b = a[::-1]
     
+    print(a)
+    print(b)
+    
     # make instructs
     test = Instruction(bus, a)
     test2 = Instruction(bus, b)
+    
+    print(test, test2)
     
     test.sendToLegs()
     test.recallCommand()
