@@ -1,5 +1,5 @@
 from gait_and_homing import JoystickToGait, TestOneLeg
-from i2c_comm import I2CBus, GMTIno
+from i2c_comm import I2CBus, GMTIno, testI2C
 from joystick import GMTJoystick
 import time
 
@@ -22,7 +22,8 @@ leg5 = GMTIno("leg5", 0x14)
 leg6 = GMTIno("leg6", 0x15)
 
 # add legs to bus
-bus.addDevices(leg1)
+# bus.addDevices(leg1)
+bus.addDevices(leg2)
 # bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
 print([d for d in bus.devices.keys()])
 print([hex(d.address) for d in bus.devices.values()])
@@ -47,8 +48,11 @@ def joystickLoop():
             # convert x and y signal to move single leg
             # TestOneLeg(x, y, bus)
             
-            # converts user input to gait
-            JoystickToGait(x, y, a_btn, y_btn, bus)
+            # test i2c comm
+            testI2C(bus)
+            
+            # # converts user input to gait
+            # JoystickToGait(x, y, a_btn, y_btn, bus)
 
         time.sleep(2)
     
