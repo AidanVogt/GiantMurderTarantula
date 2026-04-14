@@ -37,12 +37,11 @@ def JoystickToGait(x: int, y:int, home: bool, coolness: bool, bus: I2CBus):
     # handle d-pad inputs
     elif x == 1:
         print("Turn right")
-        CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
+        # CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     
     elif x == -1:
         print("Turn Left")
-        CompleteOneMovementCycle(gaits[GAIT_TURN_LEFT], bus)
-
+        # CompleteOneMovementCycle(gaits[GAIT_TURN_LEFT], bus)
 
     elif y==1:
         print("Forward")
