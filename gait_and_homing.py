@@ -65,7 +65,11 @@ def HomeMotors(bus, joystick):
         # allow user to adjust hip motor, if y_bt pressed, move to next one
         while not finished:
             
+            print(f"in homing loop for {legs[i]}")
+            time.sleep(2)
             x, y, a_btn, y_btn = joystick.getControls()
+            
+            print(y_btn)
             
             
             if y_btn:
