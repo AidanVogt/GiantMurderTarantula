@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_FORWARD, ACTION_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_FORWARD, ACTION_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
@@ -22,7 +22,16 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     # gait type is a list of tuples (len 6) specifying instructions
     for inst in gait_type:
         MoveLegs(bus, inst)
-        
+       
+def EmergencyStopCheck(bus, curr_leg, joystick):
+
+    _, _, _, _, b_btn = joystick.getControls()
+    
+    if b_btn:
+        print("Stopping")
+        bus.devices[curr_leg].sendData(ACTION_DOWN)
+        bus.devices[curr_leg].sendData(ACTION_NONE)
+
 
 def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
 
@@ -62,16 +71,18 @@ def HomeMotors(bus, joystick):
         # move leg up before homing
         bus.devices[legs[i]].sendData(ACTION_UP)
         
+        # exit here if needed
+        EmergencyStopCheck(bus, legs[i], joystick)
+        
         # allow user to adjust hip motor, if y_bt pressed, move to next one
         while not finished:
             
             print(f"in homing loop for {legs[i]}")
             time.sleep(2)
-            x, y, a_btn, y_btn = joystick.getControls()
+            x, y, a_btn, y_btn, b_btn = joystick.getControls()
             
             print(y_btn)
             print(x, y)
-            
             
             if y_btn:
                 # move leg down after finshing homing
@@ -88,6 +99,7 @@ def HomeMotors(bus, joystick):
                 
                 # wait until done
                 while done_moving != 1:
+                    EmergencyStopCheck(bus, legs[i], joystick)
                     done_moving += bus.pollArduinos()
                     
                 
@@ -101,6 +113,7 @@ def HomeMotors(bus, joystick):
                 
                 # wait until done
                 while done_moving != 1:
+                    EmergencyStopCheck(bus, legs[i], joystick)
                     done_moving += bus.pollArduinos()
     
        
