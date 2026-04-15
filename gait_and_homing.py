@@ -70,6 +70,7 @@ def HomeMotors(bus, joystick):
             x, y, a_btn, y_btn = joystick.getControls()
             
             print(y_btn)
+            print(x, y)
             
             
             if y_btn:
