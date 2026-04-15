@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, GAIT_HOME, GAIT_COOL
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_FORWARD, ACTION_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
@@ -22,15 +22,11 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     # gait type is a list of tuples (len 6) specifying instructions
     for inst in gait_type:
         MoveLegs(bus, inst)
-
-def JoystickToGait(x: int, y:int, home: bool, coolness: bool, bus: I2CBus):
-    
-    # handle button presses first
-    if home:
-        print("HOMING")
-        CompleteOneMovementCycle(gaits[GAIT_HOME], bus)
         
-    elif coolness:
+
+def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
+
+    if coolness:
         print("Wiggle/Coolness fct")
         CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
     
@@ -51,7 +47,40 @@ def JoystickToGait(x: int, y:int, home: bool, coolness: bool, bus: I2CBus):
     elif y == -1:
         print("Back")
         CompleteOneMovementCycle(gaits[GAIT_BACKWARD], bus)
+     
+
+def HomeMotors(bus, joystick):
+    
+    legs = sorted(bus.devices.keys())
+    
+    # for each leg, move until y btn is pressed again
+    for i in range(len(legs)):
         
+        # enter loop to home
+        finished = False
+        
+        # move leg up before homing
+        bus.devices[legs[i]].sendData(ACTION_UP)
+        
+        # allow user to adjust hip motor, if y_bt pressed, move to next one
+        while not finished:
+            
+            x, y, a_btn, y_btn = joystick.getControls()
+            
+            
+            if y_btn:
+                # move leg down after finshing homing
+                print(f"Finished homing {legs[i]}")
+                bus.devices[legs[i]].sendData(ACTION_DOWN)
+                finished = True
+                
+            elif y == 1:
+                bus.devices[legs[i]].sendData(ACTION_FORWARD)
+                
+            elif y == -1:
+                bus.devices[legs[i]].sendData(ACTION_BACKWARD)
+    
+       
         
 def TestOneLeg(x: int, y: int, bus: I2CBus):
     
