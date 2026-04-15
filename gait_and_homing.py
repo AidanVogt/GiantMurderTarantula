@@ -82,8 +82,21 @@ def HomeMotors(bus, joystick):
             elif y == 1:
                 bus.devices[legs[i]].sendData(ACTION_FORWARD)
                 
+                done_moving = 0
+                
+                # wait until done
+                while done_moving != 1:
+                    done_moving += bus.pollArduinos()
+                
+                
             elif y == -1:
                 bus.devices[legs[i]].sendData(ACTION_BACKWARD)
+                
+                done_moving = 0
+                
+                # wait until done
+                while done_moving != 1:
+                    done_moving += bus.pollArduinos()
     
        
         
