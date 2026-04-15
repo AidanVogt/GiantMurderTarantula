@@ -41,8 +41,8 @@ def joystickLoop():
         if controls is not None:
             
             # get controls (y btn for coolness factor)
-            x, y, a_btn, y_btn = controls
-            print(x, y, a_btn, y_btn)
+            x, y, a_btn, y_btn, b_btn = controls
+            print(x, y, a_btn, y_btn, b_btn)
             print()
             
             if y_btn:
