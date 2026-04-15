@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_FORWARD, ACTION_BACKWARD, GAIT_COOL
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_FORWARD, ACTION_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
@@ -59,12 +59,19 @@ def HomeMotors(bus, joystick):
         # enter loop to home
         finished = False
         
+        # move leg up before homing
+        bus.devices[legs[i]].sendData(ACTION_UP)
+        
         # allow user to adjust hip motor, if y_bt pressed, move to next one
         while not finished:
+            
             x, y, a_btn, y_btn = joystick.getControls()
             
+            
             if y_btn:
+                # move leg down after finshing homing
                 print(f"Finished homing {legs[i]}")
+                bus.devices[legs[i]].sendData(ACTION_DOWN)
                 finished = True
                 
             elif y == 1:
