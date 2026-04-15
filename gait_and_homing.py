@@ -26,13 +26,12 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
 
 def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
 
-        
-    # if coolness:
-    #     print("Wiggle/Coolness fct")
-    #     CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
+    if coolness:
+        print("Wiggle/Coolness fct")
+        CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
     
     # handle d-pad inputs
-    if x == 1:
+    elif x == 1:
         print("Turn right")
         # CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     
