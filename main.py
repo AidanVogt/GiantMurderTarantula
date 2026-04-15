@@ -1,4 +1,4 @@
-from gait_and_homing import JoystickToGait, TestOneLeg
+from gait_and_homing import JoystickToGait, TestOneLeg, HomeMotors
 from i2c_comm import I2CBus, GMTIno, testI2C
 from joystick import GMTJoystick
 import time
@@ -42,8 +42,13 @@ def joystickLoop():
             
             # get controls (y btn for coolness factor)
             x, y, a_btn, y_btn = controls
-            
             print(x, y, a_btn, y_btn)
+            print()
+            
+            if y_btn:
+                print("Starting Manual Homing")
+                HomeMotors(bus, j)
+                print("Finished Manual Homing")
             
             # convert x and y signal to move single leg
             # TestOneLeg(x, y, bus)
@@ -52,7 +57,7 @@ def joystickLoop():
             # testI2C(bus)
             
             # # converts user input to gait
-            JoystickToGait(x, y, a_btn, y_btn, bus)
+            JoystickToGait(x, y, a_btn, bus)
 
         time.sleep(2)
     

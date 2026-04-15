@@ -18,12 +18,11 @@ class Instruction:
         self.bus = bus
         self.instructions = instructions
 
-        
+    # TODO fix for more legs
     def sendToLegs(self):
         
         # names of the legs (match the order of instructions)
         legs = sorted(self.bus.devices.keys())
-        print(len(legs))
         num = 0
         
         # send each to legs if not none
