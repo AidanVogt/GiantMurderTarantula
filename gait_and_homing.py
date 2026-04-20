@@ -101,6 +101,7 @@ def HomeMotors(bus, joystick):
             
             # exit here if needed
             stop = StopHoming(bus, legs[i], joystick)
+            print("Stop: ", stop)
         
             if stop:
                 return
