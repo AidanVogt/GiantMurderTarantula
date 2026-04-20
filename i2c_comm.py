@@ -18,7 +18,7 @@ class Instruction:
         self.bus = bus
         self.instructions = instructions
 
-    # TODO fix for more legs
+
     def sendToLegs(self):
         
         # names of the legs (match the order of instructions)
@@ -28,9 +28,12 @@ class Instruction:
         # send each to legs if not none
         for inst in self.instructions:
             
+            # if testing only one leg
             if len(legs) == 1:
                 self.bus.devices[legs[num]].sendData(inst)
                 break
+            
+            self.bus.devices[legs[num]].sendData(inst)
             
             num += 1
             

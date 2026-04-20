@@ -19,6 +19,10 @@ def MoveLegs(bus: I2CBus, inst):
 # determine which movement cycle to conduct based on x and y from dpad
 def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     
+    """
+    Execute a full cycle of movement as defined in a single gait from gaits.py
+    """
+    
     # gait type is a list of tuples (len 6) specifying instructions
     for inst in gait_type:
         MoveLegs(bus, inst)
@@ -49,7 +53,7 @@ def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
     # handle d-pad inputs
     elif x == 1:
         print("Turn right")
-        # CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
+        CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     
     elif x == -1:
         print("Turn Left")
@@ -134,8 +138,6 @@ def HomeMotors(bus, joystick):
                 # wait until done
                 while done_moving != 1:
                     done_moving += bus.pollArduinos()
-    
-       
         
 def TestOneLeg(x: int, y: int, bus: I2CBus):
     

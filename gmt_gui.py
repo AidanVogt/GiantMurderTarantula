@@ -9,6 +9,9 @@ from joystick import startJoystick
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+"""
+GUI to display xbox controls, used for the demo to verify connection between Raspberry Pi and Xbox controller
+"""
 
 # Python GUI - plot motor controls
 
