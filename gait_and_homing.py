@@ -19,11 +19,18 @@ def MoveLegs(bus: I2CBus, inst):
 # determine which movement cycle to conduct based on x and y from dpad
 def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     
+    """
+    Execute a full cycle of movement as defined in a single gait from gaits.py
+    """
+    
     # gait type is a list of tuples (len 6) specifying instructions
     for inst in gait_type:
         MoveLegs(bus, inst)
        
-def EmergencyStopCheck(bus, curr_leg, joystick):
+def StopHoming(bus, curr_leg, joystick):
+    """
+    Returns whether or not to stop homing the motors
+    """
 
     _, _, _, _, b_btn = joystick.getControls()
     
@@ -31,7 +38,11 @@ def EmergencyStopCheck(bus, curr_leg, joystick):
         print("Stopping")
         bus.devices[curr_leg].sendData(ACTION_DOWN)
         bus.devices[curr_leg].sendData(ACTION_NONE)
+        
+        return True
 
+    else: 
+        return False
 
 def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
 
@@ -42,7 +53,7 @@ def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
     # handle d-pad inputs
     elif x == 1:
         print("Turn right")
-        # CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
+        CompleteOneMovementCycle(gaits[GAIT_TURN_RIGHT], bus)
     
     elif x == -1:
         print("Turn Left")
@@ -59,7 +70,13 @@ def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
      
 
 def HomeMotors(bus, joystick):
+    """
+    Home hip motors individually via joystick. Use the B button to exit the homing loop, use Y button to move to each hip motor
+    Use Y to exit the 
+    Use d pad either x or y direction to move the hip forward or back
+    """
     
+    # get all legs
     legs = sorted(bus.devices.keys())
     
     # for each leg, move until y btn is pressed again
@@ -72,39 +89,46 @@ def HomeMotors(bus, joystick):
         bus.devices[legs[i]].sendData(ACTION_UP)
         
         # exit here if needed
-        EmergencyStopCheck(bus, legs[i], joystick)
+        stop = StopHoming(bus, legs[i], joystick)
+        
+        if stop:
+            return
         
         # allow user to adjust hip motor, if y_bt pressed, move to next one
         while not finished:
             
             print(f"in homing loop for {legs[i]}")
-            time.sleep(2)
+            time.sleep(1)
+            
+            # exit here if needed
+            stop = StopHoming(bus, legs[i], joystick)
+        
+            if stop:
+                return
+            
             x, y, a_btn, y_btn, b_btn = joystick.getControls()
             
             print(y_btn)
             print(x, y)
-            
+        
+            # use y button to terminate homing for a single leg
             if y_btn:
                 # move leg down after finshing homing
                 print(f"Finished homing {legs[i]}")
                 bus.devices[legs[i]].sendData(ACTION_DOWN)
                 finished = True
                 
-            elif x == 1:
+            elif x == 1 or y == 1:
                 
                 print("fwd")
                 bus.devices[legs[i]].sendData(ACTION_FORWARD)
-                
                 done_moving = 0
                 
                 # wait until done
                 while done_moving != 1:
-                    EmergencyStopCheck(bus, legs[i], joystick)
                     done_moving += bus.pollArduinos()
                     
-                
-                
-            elif x == -1:
+            elif x == -1 or y == -1:
                 
                 print("back")
                 bus.devices[legs[i]].sendData(ACTION_BACKWARD)
@@ -113,10 +137,7 @@ def HomeMotors(bus, joystick):
                 
                 # wait until done
                 while done_moving != 1:
-                    EmergencyStopCheck(bus, legs[i], joystick)
                     done_moving += bus.pollArduinos()
-    
-       
         
 def TestOneLeg(x: int, y: int, bus: I2CBus):
     

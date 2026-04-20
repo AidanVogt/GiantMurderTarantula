@@ -1,5 +1,5 @@
-from gait_and_homing import JoystickToGait, TestOneLeg, HomeMotors
-from i2c_comm import I2CBus, GMTIno, testI2C
+from gait_and_homing import JoystickToGait, HomeMotors
+from i2c_comm import I2CBus, GMTIno
 from joystick import GMTJoystick
 import time
 
