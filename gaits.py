@@ -65,9 +65,6 @@ gaits = {
         # down
         (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
         
-        # return to neutral stance phace
-        (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
-        
         #### GROUP 2 LEGS 2, 4, 6 ####
         # up
         (ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
@@ -78,13 +75,28 @@ gaits = {
         # down
         (ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN),
         
-        # return to neutral stance phase
-        (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
     ],
     
     GAIT_TURN_LEFT: [
-        (ACTION_FORWARD, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
-        (ACTION_FORWARD, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
+        #### GROUP 1 LEGS 1, 3, 5 ####
+        # up
+        (ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE),
+        
+        # swing phase
+        (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
+
+        # down
+        (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
+        
+        #### GROUP 2 LEGS 2, 4, 6 ####
+        # up
+        (ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
+        
+        # swing phase - leg in air, grounded legs move back
+        (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
+        
+        # down
+        (ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN),
     ],
     
     GAIT_TURN_RIGHT: [
@@ -109,7 +121,7 @@ gaits = {
     
     # stance: right legs continue, left legs neutral
     (ACTION_FORWARD, ACTION_NONE,    ACTION_FORWARD,  ACTION_NONE,    ACTION_FORWARD,  ACTION_NONE),
-],
+    ],
     
     GAIT_HOME: [
         # home 3 legs at a time to prevent instability

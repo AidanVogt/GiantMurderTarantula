@@ -6,9 +6,6 @@ import time
 Functions to handle the joystick to gait conversion and testing single legs.
 """
 
-# simpler method
-# Decompose gait into instructions, modify code to send a single byte
-
 def MoveLegs(bus: I2CBus, inst):
     """Send commands to multiple legs in bus, waits until completion"""
     
