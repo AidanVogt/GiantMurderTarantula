@@ -76,6 +76,8 @@ def HomeMotors(bus, joystick):
     # get all legs
     legs = sorted(bus.devices.keys())
     
+    print("Legs to home", legs)
+    
     # for each leg, move until y btn is pressed again
     for i in range(len(legs)):
         
