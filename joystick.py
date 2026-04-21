@@ -11,15 +11,27 @@ class GMTJoystick:
         pygame.init()
         pygame.joystick.init()
         
-        if pygame.joystick.get_count() == 0:
-            print("no controller")
-            exit(1)
-            
+        # if pygame.joystick.get_count() == 0:
+        #     print("no controller")
+        
+        # check for connection to xbox controller
+        self.tryConnection()
+        
+        # init control
         self.j = pygame.joystick.Joystick(0)
         self.j.init()
         print(f"Controller: {self.j.get_name()}")
         self.connected = True
         
+    def tryConnection(self):
+        
+        while pygame.joystick.get_count() == 0:
+            print("no controller")
+            time.sleep(1)
+            
+        print("controller found")
+
+    
     def getControls(self):
         # returns controls
             
