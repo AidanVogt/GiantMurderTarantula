@@ -4,11 +4,11 @@
 #include <Wire.h>
 
 // I2C LEG ADDRESS (use 0x10 to 0x15)
-#define INO_ADDRESS 0x14
+#define INO_ADDRESS 0x11
 
 
 #define IS_LEFT_STEPPER (INO_ADDRESS == 0x12 || INO_ADDRESS == 0x13) ? 1 : 0
-#define REVERSE_DIRECTION = INO_ADDRESS >= 0x13 ? 1 : 0
+#define REVERSE_DIRECTION INO_ADDRESS >= 0x13 ? 1 : 0
 
 #define MAX485_DE      8
 #define MAX485_RE_NEG  9
@@ -57,7 +57,7 @@ HallSensor encoder = HallSensor(HALL_A, HALL_B, HALL_C, 5);
 ModbusMaster node;
 
 bool forward = true;
-unsigned int last_print = 0;
+unsigned long last_print = 0;
 unsigned char current_action = ACTION_NONE;
 
 //////////////// MOTOR MOVEMENT FUNCS ////////////////
@@ -84,9 +84,7 @@ void setMotorState(bool EN, bool FR, bool BK) {
 
   high |= (1 << 3);
 
-  uint8_t result = node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
-  Serial.print("setting motor result: ");
-  Serial.println(result);
+  node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
 }
 
 void set_motor_speed() {
@@ -150,10 +148,14 @@ void step_up() {
 
 void move_forward(float angle) {
   float end_condition = encoder.getAngle() + angle;
+  Serial.print("end condition: ");
+  Serial.println(end_condition);
+  Serial.print("current angle: ");
+  Serial.println(encoder.getAngle());
   set_forward();
-  int step_time = millis();
-  float max_time = angle * STEP_MAX_TIME_CONSTANT;
-  while (current_action == ACTION_FORWARD && encoder.getAngle() < end_condition) {
+  unsigned long step_time = millis();
+  unsigned long max_time = angle * STEP_MAX_TIME_CONSTANT;
+  while (current_action != ACTION_NONE && encoder.getAngle() < end_condition) {
     encoder.update();
 
     if (millis() - step_time > max_time) {
@@ -170,20 +172,23 @@ void move_forward(float angle) {
       Serial.println(encoder.getAngle());
       last_print = millis();
     }
-  }
+  } 
   non_braking_stop();
 }
 
 void move_backward(float angle) {
   float end_condition = encoder.getAngle() - angle;
+  Serial.print("end condition: ");
+  Serial.println(end_condition);
+  Serial.print("current angle: ");
+  Serial.println(encoder.getAngle());
   set_backward();
-  int step_time = millis();
-  float max_time = angle * STEP_MAX_TIME_CONSTANT;
-  while (current_action == ACTION_BACKWARD && encoder.getAngle() > end_condition) {
+  unsigned long step_time = millis();
+  unsigned long max_time = angle * STEP_MAX_TIME_CONSTANT;
+  while (current_action != ACTION_NONE && encoder.getAngle() > end_condition) {
     encoder.update();
 
     if (millis() - step_time > max_time) {
-      Serial.print("step timeout breaking...");
       Serial.println(millis() - step_time);
       break;
     }
@@ -296,9 +301,9 @@ void get_action_serial() {
     if (c == 'c')
       set_motor_speed();
     if (c == 'h')
-      move_forward(HIP_HOME_INTERVAL);
+      current_action = ACTION_HOME_FORWARD;
     if (c == 'g')
-      move_backward(HIP_HOME_INTERVAL);
+      current_action = ACTION_HOME_BACKWARD;
   }
 }
 
