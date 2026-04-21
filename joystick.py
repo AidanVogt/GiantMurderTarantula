@@ -57,11 +57,12 @@ class GMTJoystick:
             a_btn = bool(self.j.get_button(0))
             y_btn = bool(self.j.get_button(3))
             b_btn = bool(self.j.get_button(1))
+            x_btn = bool(self.j.get_button(2))
             
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
             
-            return (x, y, a_btn, y_btn, b_btn)
+            return (x, y, a_btn, y_btn, b_btn, x_btn)
 
         except Exception as e:
             self.connected = False

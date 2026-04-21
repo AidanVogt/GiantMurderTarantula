@@ -39,8 +39,8 @@ def joystickLoop():
         if controls is not None:
             
             # get controls (y btn for coolness factor)
-            x, y, a_btn, y_btn, b_btn = controls
-            print(x, y, a_btn, y_btn, b_btn)
+            x, y, a_btn, y_btn, b_btn, x_btn = controls
+            print(x, y, a_btn, y_btn, b_btn, x_btn)
             print()
             
             if y_btn:
@@ -55,7 +55,7 @@ def joystickLoop():
             # testI2C(bus)
             
             # # converts user input to gait
-            JoystickToGait(x, y, a_btn, bus)
+            JoystickToGait(x, y, a_btn, x_btn, bus)
 
         time.sleep(2)
     

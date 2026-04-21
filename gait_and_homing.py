@@ -1,10 +1,13 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import GAIT_RAISE_TRIPOD, gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_RAISE_TRIPOD, gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
 Functions to handle the joystick to gait conversion and testing single legs.
 """
+
+# global for lifting and lowering
+LIFT_LOWER = False
 
 def MoveLegs(bus: I2CBus, inst):
     """Send commands to multiple legs in bus, waits until completion"""
@@ -29,7 +32,7 @@ def StopHoming(bus, curr_leg, joystick):
     Returns whether or not to stop homing the motors
     """
 
-    _, _, _, _, b_btn = joystick.getControls()
+    _, _, _, _, b_btn, x_btn = joystick.getControls()
     
     if b_btn:
         print("B button pressed, stopping")
@@ -41,9 +44,25 @@ def StopHoming(bus, curr_leg, joystick):
     else: 
         return False
 
-def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
+def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, bus: I2CBus):
+    
+    # use the global variable for this
+    global LIFT_LOWER
+    
+    if lift_lower:
+        
+        # change flag if pressed
+        LIFT_LOWER = not LIFT_LOWER
+        
+        if LIFT_LOWER:
+            print("lifting")
+            CompleteOneMovementCycle(gaits[GAIT_RAISE_ALL], bus)
+        
+        else:
+            print("lowering")
+            CompleteOneMovementCycle(gaits[GAIT_LOWER_ALL], bus)
 
-    if coolness:
+    elif coolness:
         print("Wiggle/Coolness fct")
         # CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
         CompleteOneMovementCycle(gaits[GAIT_RAISE_TRIPOD], bus)
