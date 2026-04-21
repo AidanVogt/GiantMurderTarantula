@@ -75,6 +75,20 @@ class I2CBus:
             if isinstance(device, GMTIno):
                 device.bus = self
                 self.devices[device.name] = device
+                
+    def pollSingleLeg(self, device):
+        
+        try:
+            response = device.readI2C()
+            print(f"response: {response} from device name {device.name}")
+            
+            if response == 1:
+                print("device finished moving")
+                return True
+            
+        except OSError as e:
+            print(f"Failed to poll device {hex(device.address)}: {e}")
+
 
     def pollArduinos(self):
         # poll all arduinos on the bus to check their status

@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_FORWARD, ACTION_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
@@ -81,11 +81,14 @@ def HomeMotors(bus, joystick):
     # for each leg, move until y btn is pressed again
     for i in range(len(legs)):
         
+        # store current leg as var
+        curr_leg = bus.devices[legs[i]]
+        
         # enter loop to home
         finished = False
         
         # move leg up before homing
-        bus.devices[legs[i]].sendData(ACTION_UP)
+        curr_leg.sendData(ACTION_UP)
         
         # exit here if needed
         stop = StopHoming(bus, legs[i], joystick)
@@ -115,29 +118,29 @@ def HomeMotors(bus, joystick):
             if y_btn:
                 # move leg down after finshing homing
                 print(f"Finished homing {legs[i]}")
-                bus.devices[legs[i]].sendData(ACTION_DOWN)
+                curr_leg.sendData(ACTION_DOWN)
                 finished = True
                 
             elif x == 1 or y == 1:
                 
                 print("fwd")
-                bus.devices[legs[i]].sendData(ACTION_FORWARD)
-                done_moving = 0
+                curr_leg.sendData(ACTION_HOME_FORWARD)
+                done_moving = False
                 
                 # wait until done
-                while done_moving != 1:
-                    done_moving += bus.pollArduinos()
+                while not done_moving:
+                    done_moving = bus.pollSingleLeg(curr_leg)
                     
             elif x == -1 or y == -1:
                 
                 print("back")
-                bus.devices[legs[i]].sendData(ACTION_BACKWARD)
+                bus.devices[legs[i]].sendData(ACTION_HOME_BACKWARD)
                 
-                done_moving = 0
+                done_moving = False
                 
                 # wait until done
-                while done_moving != 1:
-                    done_moving += bus.pollArduinos()
+                while not done_moving:
+                    done_moving = bus.pollSingleLeg(curr_leg)
         
 def TestOneLeg(x: int, y: int, bus: I2CBus):
     
