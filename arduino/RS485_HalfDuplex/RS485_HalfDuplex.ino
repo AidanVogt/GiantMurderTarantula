@@ -14,7 +14,7 @@
 #define TX_RS485 11
 
 #define MOTOR_SPEED 200
-#define MOVE_INTERVAL 250
+#define MOVE_INTERVAL 15
 
 #define PRINT_INTERVAL 250
 
@@ -61,7 +61,8 @@ void setMotorState(bool EN, bool FR, bool BK) {
 
   high |= (1 << 3);
 
-  node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
+  uint8_t result = node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
+  Serial.println(result);
 }
 
 // not recommended for normal operation
@@ -164,7 +165,8 @@ void setup()
 
   delay(500);
 
-  node.writeSingleRegister(0x8005, MOTOR_SPEED);
+  uint8_t result = node.writeSingleRegister(0x8005, MOTOR_SPEED);
+  Serial.println(result);
   delay(100);
 
   last_print = millis();
@@ -172,9 +174,21 @@ void setup()
 
 int direction = 0;
 
+void set_thing() {
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 'f') {
+      doing_thing = 1;
+    } else if (c == 'b') {
+      doing_thing = 2;
+    }
+  }
+}
+
 void loop()
 {
   encoder.update();
+  set_thing();
   if (doing_thing == 1) {
     doing_thing = 0;
     move_forward();

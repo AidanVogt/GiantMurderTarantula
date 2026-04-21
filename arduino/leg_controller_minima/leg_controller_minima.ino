@@ -5,10 +5,7 @@
 
 // I2C LEG ADDRESS (use 0x10 to 0x15)
 #define INO_ADDRESS 0x14
-
-
 #define IS_LEFT_STEPPER (INO_ADDRESS == 0x12 || INO_ADDRESS == 0x13) ? 1 : 0
-#define REVERSE_DIRECTION = INO_ADDRESS >= 0x13 ? 1 : 0
 
 #define MAX485_DE      8
 #define MAX485_RE_NEG  9
@@ -127,7 +124,7 @@ void set_backward() {
 void step_down() {
   Serial.println("stepping down");
   digitalWrite(DIR_PIN, IS_LEFT_STEPPER);
-  for (int i = 0; i < 300; i++) {
+  for (int i = 0; i < 350; i++) {
     encoder.update();
     digitalWrite(PUL_PIN, LOW);
     delayMicroseconds(1000);
@@ -139,7 +136,7 @@ void step_down() {
 void step_up() {
   Serial.println("stepping up");
   digitalWrite(DIR_PIN, !IS_LEFT_STEPPER);
-  for (int i = 0; i < 350; i++) {
+  for (int i = 0; i < 500; i++) {
     encoder.update();
     digitalWrite(PUL_PIN, LOW);
     delayMicroseconds(1000);
@@ -207,18 +204,12 @@ void move_down() {
   step_down();
 }
 
-void handle_forward(int angle) {
-  if (REVERSE_DIRECTION)
-    move_backward(angle);
-  else
-    move_forward(angle);
-}
-
-void handle_backward(int angle) {
-  if (REVERSE_DIRECTION)
-    move_forward(angle);
-  else
-    move_backward(angle);
+void move_home() {
+  set_backward();
+  if (is_hitting_limit()) {
+    non_braking_stop();
+  }
+  encoder.init();
 }
 
 ////////////////// I2C PARSING ////////////////
@@ -307,17 +298,17 @@ void loop()
   encoder.update();
   get_action_serial();
   if        (current_action == ACTION_FORWARD) {
-    handle_forward(HIP_MOVE_INTERVAL);
+    move_forward(HIP_MOVE_INTERVAL);
   } else if (current_action == ACTION_BACKWARD) {
-    handle_backward(HIP_MOVE_INTERVAL);
+    move_backward(HIP_MOVE_INTERVAL);
   } else if (current_action == ACTION_UP) {
     move_up();
   } else if (current_action == ACTION_DOWN) {
     move_down();
   } else if (current_action == ACTION_HOME_FORWARD) {
-    handle_forward(HIP_HOME_INTERVAL);
+    move_forward(HIP_HOME_INTERVAL);
   } else if (current_action == ACTION_HOME_BACKWARD) {
-    handle_backward(HIP_HOME_INTERVAL);
+    move_backward(HIP_HOME_INTERVAL);
   }
   current_action = ACTION_NONE;
 }
