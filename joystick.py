@@ -35,7 +35,7 @@ class GMTJoystick:
                     # store it as the joystick in the object if connected
                     joy = pygame.joystick.Joystick(event.device_index)
 
-                    print(f"Controller found: {self.j.get_name()}")
+                    print(f"Controller found: {joy.get_name()}")
                     
                     return joy
 
