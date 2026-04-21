@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_RAISE_TRIPOD, gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_RAISE_TRIPOD, gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
@@ -37,7 +37,15 @@ def StopHoming(bus, curr_leg, joystick):
     if b_btn:
         print("B button pressed, stopping")
         bus.devices[curr_leg].sendData(ACTION_DOWN)
-        bus.devices[curr_leg].sendData(ACTION_NONE)
+        
+        done_moving = False
+                
+        # wait until done
+        while not done_moving:
+            print("waiting for leg down")
+            done_moving = bus.pollSingleLeg(curr_leg)
+            
+        bus.devices[curr_leg].sendData(ACTION_ZERO)
         
         return True
 
@@ -133,6 +141,15 @@ def HomeMotors(bus, joystick):
                 # move leg down after finshing homing
                 print(f"Finished homing {legs[i]}")
                 curr_leg.sendData(ACTION_DOWN)
+                
+                done_moving = False
+                
+                # wait until done
+                while not done_moving:
+                    done_moving = bus.pollSingleLeg(curr_leg)
+                    
+                # send home byte
+                curr_leg.sendData(ACTION_ZERO)
                 finished = True
             
             elif x == 1:
