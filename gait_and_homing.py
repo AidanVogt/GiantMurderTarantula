@@ -43,7 +43,7 @@ def StopHoming(bus, curr_leg, joystick):
         # wait until done
         while not done_moving:
             print("waiting for leg down")
-            done_moving = bus.pollSingleLeg(curr_leg)
+            done_moving = bus.pollSingleLeg(bus.devices[curr_leg])
             
         bus.devices[curr_leg].sendData(ACTION_ZERO)
         
