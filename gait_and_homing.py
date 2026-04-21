@@ -123,7 +123,7 @@ def HomeMotors(bus, joystick):
             if stop:
                 return
             
-            x, y, a_btn, y_btn, b_btn = joystick.getControls()
+            x, y, a_btn, y_btn, b_btn, x_btn = joystick.getControls()
             
             print("y_btn value: ", y_btn)
             print(x, y)
