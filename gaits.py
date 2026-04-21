@@ -6,6 +6,10 @@ Each movement "cycle" is divided into 10 steps, where the legs pass through the 
 
 """
 
+# NOTE: Legs 0x13 (4), 0x14 (5), and 0x15 (6) movements need to be reversed (meaning forwards = backwards)
+
+# testing rotation gait
+
 # ACTIONS (forward/backward mean hip movement, up/down mean knee movement)
 ACTION_NONE = 0
 ACTION_FORWARD = 1
@@ -104,24 +108,24 @@ gaits = {
     #### GROUP 1 LEGS 1, 3, 5 (RIGHT SIDE) SWING ####
     (ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE),
     
-    # right legs swing backward, left grounded legs push backward (rotates CW)
-    (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
+    # right legs swing backward, left grounded legs push backward (rotates CW, note last 3 directions reversed)
+    (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_BACKWARD),
     
     (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
     
-    # stance: left legs continue, right legs neutral
-    (ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD),
+    # stance: left legs continue, right legs neutral (last 3 directions reversed)
+    (ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_BACKWARD, ACTION_NONE, ACTION_BACKWARD),
 
     #### GROUP 2 LEGS 2, 4, 6 (LEFT SIDE) SWING ####
     (ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
     
     # left legs swing forward, right grounded legs push forward (rotates CW)
-    (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
+    (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
     
     (ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN),
     
     # stance: right legs continue, left legs neutral
-    (ACTION_FORWARD, ACTION_NONE,    ACTION_FORWARD,  ACTION_NONE,    ACTION_FORWARD,  ACTION_NONE),
+    (ACTION_FORWARD, ACTION_NONE,    ACTION_FORWARD,  ACTION_NONE,    ACTION_BACKWARD,  ACTION_NONE),
     ],
     
     GAIT_COOL: [
@@ -136,8 +140,8 @@ gaits = {
     GAIT_RAISE_TRIPOD: [
         # first set of three legs
         (ACTION_UP, ACTION_UP, ACTION_UP, ACTION_UP, ACTION_UP, ACTION_UP),
-        (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
-        (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
+        (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
+        (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
         (ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN),
     ],
     
