@@ -23,6 +23,7 @@ leg6 = GMTIno("leg6", 0x15)
 
 # add legs to bus
 bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
+print("Bus Devices and Addresses:")
 print([d for d in bus.devices.keys()])
 print([hex(d.address) for d in bus.devices.values()])
 print(leg1.bus)
@@ -40,7 +41,7 @@ def joystickLoop():
             
             # get controls (y btn for coolness factor)
             x, y, a_btn, y_btn, b_btn, x_btn = controls
-            print(x, y, a_btn, y_btn, b_btn, x_btn)
+            print(f"x: {x}, y: {y}, A: {a_btn}, Y: {y_btn}, B: {b_btn}, X: {x_btn}")
             print()
             
             if y_btn:
