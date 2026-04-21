@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import GAIT_RAISE_TRIPOD, gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 import time
 
 """
@@ -45,7 +45,8 @@ def JoystickToGait(x: int, y:int, coolness: bool, bus: I2CBus):
 
     if coolness:
         print("Wiggle/Coolness fct")
-        CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
+        # CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
+        CompleteOneMovementCycle(gaits[GAIT_RAISE_TRIPOD], bus)
     
     # handle d-pad inputs
     elif x == 1:

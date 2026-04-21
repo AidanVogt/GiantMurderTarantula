@@ -12,7 +12,7 @@ class GMTJoystick:
         pygame.init()
         pygame.joystick.init()
         
-        # check for connection to xbox controller (sets self.j as joystick)
+        # check for connection to xbox controller
         self.j = self.tryConnection()
         self.j.init()
         
