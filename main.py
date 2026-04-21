@@ -22,9 +22,9 @@ leg5 = GMTIno("leg5", 0x14)
 leg6 = GMTIno("leg6", 0x15)
 
 # add legs to bus
-bus.addDevices(leg1)
+#bus.addDevices(leg1)
 #bus.addDevices(leg2)
-# bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
+bus.addDevices(leg1, leg2, leg3, leg4, leg5, leg6)
 print([d for d in bus.devices.keys()])
 print([hex(d.address) for d in bus.devices.values()])
 print(leg1.bus)
