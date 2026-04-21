@@ -128,7 +128,7 @@ class GMTIno:
         self.bus = None
         
     def sendData(self, data):
-        print(f"Sending data to Arduino {self.name} address: {hex(self.address)}")
+        print(f"Sending data: {data} to Arduino: {self.name} at address: {hex(self.address)}")
         
         if self.bus is None:
             raise RuntimeError(f"Device {hex(self.address)} not added to I2C bus")

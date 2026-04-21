@@ -32,7 +32,7 @@ def StopHoming(bus, curr_leg, joystick):
     _, _, _, _, b_btn = joystick.getControls()
     
     if b_btn:
-        print("Stopping")
+        print("B button pressed, stopping")
         bus.devices[curr_leg].sendData(ACTION_DOWN)
         bus.devices[curr_leg].sendData(ACTION_NONE)
         
@@ -111,7 +111,7 @@ def HomeMotors(bus, joystick):
             
             x, y, a_btn, y_btn, b_btn = joystick.getControls()
             
-            print(y_btn)
+            print("y_btn value: ", y_btn)
             print(x, y)
         
             # use y button to terminate homing for a single leg
