@@ -115,8 +115,8 @@ def HomeMotors(bus, joystick):
                 print(f"Finished homing {legs[i]}")
                 curr_leg.sendData(ACTION_DOWN)
                 finished = True
-                
-            elif x == 1 or y == 1:
+            
+            elif x == 1:
                 
                 print("fwd")
                 curr_leg.sendData(ACTION_HOME_FORWARD)
@@ -126,10 +126,29 @@ def HomeMotors(bus, joystick):
                 while not done_moving:
                     done_moving = bus.pollSingleLeg(curr_leg)
                     
-            elif x == -1 or y == -1:
+            elif y == 1:
+                print("up")
+                curr_leg.sendData(ACTION_UP)
+                done_moving = False
+                
+                # wait until done
+                while not done_moving:
+                    done_moving = bus.pollSingleLeg(curr_leg)
+                    
+            elif x == -1:
                 
                 print("back")
                 bus.devices[legs[i]].sendData(ACTION_HOME_BACKWARD)
+                
+                done_moving = False
+                
+                # wait until done
+                while not done_moving:
+                    done_moving = bus.pollSingleLeg(curr_leg)
+                    
+            elif y == -1:
+                print("down")
+                bus.devices[legs[i]].sendData(ACTION_DOWN)
                 
                 done_moving = False
                 
