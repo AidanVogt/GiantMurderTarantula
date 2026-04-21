@@ -83,49 +83,40 @@ gaits = {
     ],
     
     GAIT_TURN_LEFT: [
-        #### GROUP 1 LEGS 1, 3, 5 ####
-        # up
+        #### GROUP 1 LEGS 1, 3, 5 (RIGHT SIDE) SWING ####
         (ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE),
         
-        # swing phase
+        # right legs swing backward, left grounded legs push backward (rotates CW)
         (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
-
-        # down
-        (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
         
-        #### GROUP 2 LEGS 2, 4, 6 ####
-        # up
+        (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
+
+        #### GROUP 2 LEGS 2, 4, 6 (LEFT SIDE) SWING ####
         (ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
         
-        # swing phase - leg in air, grounded legs move back
+        # left legs swing forward, right grounded legs push forward (rotates CW)
         (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
         
-        # down
-        (ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN),
+        (ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN),
     ],
     
     GAIT_TURN_RIGHT: [
     #### GROUP 1 LEGS 1, 3, 5 (RIGHT SIDE) SWING ####
     (ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE),
     
-    # right legs swing backward, left grounded legs push backward (rotates CW, note last 3 directions reversed)
-    (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_BACKWARD),
+    # right legs swing backward, left grounded legs push backward (rotates CW)
+    (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
     
     (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
-    
-    # stance: left legs continue, right legs neutral (last 3 directions reversed)
-    (ACTION_NONE, ACTION_FORWARD, ACTION_NONE, ACTION_BACKWARD, ACTION_NONE, ACTION_BACKWARD),
 
     #### GROUP 2 LEGS 2, 4, 6 (LEFT SIDE) SWING ####
     (ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
     
     # left legs swing forward, right grounded legs push forward (rotates CW)
-    (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
+    (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
     
     (ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN),
-    
-    # stance: right legs continue, left legs neutral
-    (ACTION_FORWARD, ACTION_NONE,    ACTION_FORWARD,  ACTION_NONE,    ACTION_BACKWARD,  ACTION_NONE),
+
     ],
     
     GAIT_COOL: [
