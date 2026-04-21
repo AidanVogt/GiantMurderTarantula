@@ -90,12 +90,6 @@ def HomeMotors(bus, joystick):
         # move leg up before homing
         curr_leg.sendData(ACTION_UP)
         
-        # exit here if needed
-        stop = StopHoming(bus, legs[i], joystick)
-        
-        if stop:
-            return
-        
         # allow user to adjust hip motor, if y_bt pressed, move to next one
         while not finished:
             
