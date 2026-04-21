@@ -4,11 +4,8 @@
 #include <Wire.h>
 
 // I2C LEG ADDRESS (use 0x10 to 0x15)
-#define INO_ADDRESS 0x11
-
-
+#define INO_ADDRESS 0x14
 #define IS_LEFT_STEPPER (INO_ADDRESS == 0x12 || INO_ADDRESS == 0x13) ? 1 : 0
-#define REVERSE_DIRECTION INO_ADDRESS >= 0x13 ? 1 : 0
 
 #define MAX485_DE      8
 #define MAX485_RE_NEG  9
@@ -57,7 +54,7 @@ HallSensor encoder = HallSensor(HALL_A, HALL_B, HALL_C, 5);
 ModbusMaster node;
 
 bool forward = true;
-unsigned long last_print = 0;
+unsigned int last_print = 0;
 unsigned char current_action = ACTION_NONE;
 
 //////////////// MOTOR MOVEMENT FUNCS ////////////////
@@ -84,7 +81,9 @@ void setMotorState(bool EN, bool FR, bool BK) {
 
   high |= (1 << 3);
 
-  node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
+  uint8_t result = node.writeSingleRegister(0x8000, ((uint16_t)high << 8) | 0x5);
+  Serial.print("setting motor result: ");
+  Serial.println(result);
 }
 
 void set_motor_speed() {
@@ -125,7 +124,7 @@ void set_backward() {
 void step_down() {
   Serial.println("stepping down");
   digitalWrite(DIR_PIN, IS_LEFT_STEPPER);
-  for (int i = 0; i < 300; i++) {
+  for (int i = 0; i < 350; i++) {
     encoder.update();
     digitalWrite(PUL_PIN, LOW);
     delayMicroseconds(1000);
@@ -137,7 +136,7 @@ void step_down() {
 void step_up() {
   Serial.println("stepping up");
   digitalWrite(DIR_PIN, !IS_LEFT_STEPPER);
-  for (int i = 0; i < 350; i++) {
+  for (int i = 0; i < 500; i++) {
     encoder.update();
     digitalWrite(PUL_PIN, LOW);
     delayMicroseconds(1000);
@@ -148,14 +147,10 @@ void step_up() {
 
 void move_forward(float angle) {
   float end_condition = encoder.getAngle() + angle;
-  Serial.print("end condition: ");
-  Serial.println(end_condition);
-  Serial.print("current angle: ");
-  Serial.println(encoder.getAngle());
   set_forward();
-  unsigned long step_time = millis();
-  unsigned long max_time = angle * STEP_MAX_TIME_CONSTANT;
-  while (current_action != ACTION_NONE && encoder.getAngle() < end_condition) {
+  int step_time = millis();
+  float max_time = angle * STEP_MAX_TIME_CONSTANT;
+  while (current_action == ACTION_FORWARD && encoder.getAngle() < end_condition) {
     encoder.update();
 
     if (millis() - step_time > max_time) {
@@ -172,23 +167,20 @@ void move_forward(float angle) {
       Serial.println(encoder.getAngle());
       last_print = millis();
     }
-  } 
+  }
   non_braking_stop();
 }
 
 void move_backward(float angle) {
   float end_condition = encoder.getAngle() - angle;
-  Serial.print("end condition: ");
-  Serial.println(end_condition);
-  Serial.print("current angle: ");
-  Serial.println(encoder.getAngle());
   set_backward();
-  unsigned long step_time = millis();
-  unsigned long max_time = angle * STEP_MAX_TIME_CONSTANT;
-  while (current_action != ACTION_NONE && encoder.getAngle() > end_condition) {
+  int step_time = millis();
+  float max_time = angle * STEP_MAX_TIME_CONSTANT;
+  while (current_action == ACTION_BACKWARD && encoder.getAngle() > end_condition) {
     encoder.update();
 
     if (millis() - step_time > max_time) {
+      Serial.print("step timeout breaking...");
       Serial.println(millis() - step_time);
       break;
     }
@@ -212,18 +204,12 @@ void move_down() {
   step_down();
 }
 
-void handle_forward(int angle) {
-  if (REVERSE_DIRECTION)
-    move_backward(angle);
-  else
-    move_forward(angle);
-}
-
-void handle_backward(int angle) {
-  if (REVERSE_DIRECTION)
-    move_forward(angle);
-  else
-    move_backward(angle);
+void move_home() {
+  set_backward();
+  if (is_hitting_limit()) {
+    non_braking_stop();
+  }
+  encoder.init();
 }
 
 ////////////////// I2C PARSING ////////////////
@@ -301,9 +287,9 @@ void get_action_serial() {
     if (c == 'c')
       set_motor_speed();
     if (c == 'h')
-      current_action = ACTION_HOME_FORWARD;
+      move_forward(HIP_HOME_INTERVAL);
     if (c == 'g')
-      current_action = ACTION_HOME_BACKWARD;
+      move_backward(HIP_HOME_INTERVAL);
   }
 }
 
@@ -312,17 +298,17 @@ void loop()
   encoder.update();
   get_action_serial();
   if        (current_action == ACTION_FORWARD) {
-    handle_forward(HIP_MOVE_INTERVAL);
+    move_forward(HIP_MOVE_INTERVAL);
   } else if (current_action == ACTION_BACKWARD) {
-    handle_backward(HIP_MOVE_INTERVAL);
+    move_backward(HIP_MOVE_INTERVAL);
   } else if (current_action == ACTION_UP) {
     move_up();
   } else if (current_action == ACTION_DOWN) {
     move_down();
   } else if (current_action == ACTION_HOME_FORWARD) {
-    handle_forward(HIP_HOME_INTERVAL);
+    move_forward(HIP_HOME_INTERVAL);
   } else if (current_action == ACTION_HOME_BACKWARD) {
-    handle_backward(HIP_HOME_INTERVAL);
+    move_backward(HIP_HOME_INTERVAL);
   }
   current_action = ACTION_NONE;
 }
