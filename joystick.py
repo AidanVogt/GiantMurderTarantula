@@ -8,29 +8,39 @@ NOTE - switched to the dpad for controls, easier to implement
 
 class GMTJoystick:
     def __init__(self):
+        
         pygame.init()
         pygame.joystick.init()
         
-        # if pygame.joystick.get_count() == 0:
-        #     print("no controller")
-        
-        # check for connection to xbox controller
-        self.tryConnection()
-        
-        # init control
-        self.j = pygame.joystick.Joystick(0)
+        # check for connection to xbox controller (sets self.j as joystick)
+        self.j = self.tryConnection()
         self.j.init()
+        
         print(f"Controller: {self.j.get_name()}")
         self.connected = True
         
     def tryConnection(self):
         
-        while pygame.joystick.get_count() == 0:
-            print("no controller")
-            time.sleep(1)
+        """ Continually try reconnecting until joystick is added """
+        
+        print("Finding controller")
+        
+        while True:
             
-        print("controller found")
+            for event in pygame.event.get():
+                
+                # check whether a joystick was added
+                if event.type == pygame.JOYDEVICEADDED:
+                    
+                    # store it as the joystick in the object if connected
+                    joy = pygame.joystick.Joystick(event.device_index)
 
+                    print(f"Controller found: {self.j.get_name()}")
+                    
+                    return joy
+
+            time.sleep(1)
+                
     
     def getControls(self):
         # returns controls
