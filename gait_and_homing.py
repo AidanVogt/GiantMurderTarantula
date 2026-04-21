@@ -6,9 +6,6 @@ import time
 Functions to handle the joystick to gait conversion and testing single legs.
 """
 
-# simpler method
-# Decompose gait into instructions, modify code to send a single byte
-
 def MoveLegs(bus: I2CBus, inst):
     """Send commands to multiple legs in bus, waits until completion"""
     
@@ -79,6 +76,8 @@ def HomeMotors(bus, joystick):
     # get all legs
     legs = sorted(bus.devices.keys())
     
+    print("Legs to home", legs)
+    
     # for each leg, move until y btn is pressed again
     for i in range(len(legs)):
         
@@ -102,6 +101,7 @@ def HomeMotors(bus, joystick):
             
             # exit here if needed
             stop = StopHoming(bus, legs[i], joystick)
+            print("Stop: ", stop)
         
             if stop:
                 return
