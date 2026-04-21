@@ -27,6 +27,8 @@ class GMTJoystick:
         
         while True:
             
+            print("no controller")
+            
             for event in pygame.event.get():
                 
                 # check whether a joystick was added
