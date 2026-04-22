@@ -56,12 +56,11 @@ class Instruction:
         finished_devices = self.bus.pollArduinos()
         
         while num_finished < len(self.bus.devices.keys()):
+            print("numfinished", num_finished)
             finished_devices = self.bus.pollArduinos()
             num_finished += finished_devices
         
         print("All devices finished")
-
-
 
 class I2CBus:
     def __init__(self):

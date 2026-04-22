@@ -8,7 +8,7 @@ Each movement "cycle" is divided into 10 steps, where the legs pass through the 
 
 # NOTE: Legs 0x13 (4), 0x14 (5), and 0x15 (6) movements need to be reversed (meaning forwards = backwards)
 
-# testing rotation gait
+# testing rotation gait, excluding leg 2 because it broke
 
 # ACTIONS (forward/backward mean hip movement, up/down mean knee movement)
 ACTION_NONE = 0

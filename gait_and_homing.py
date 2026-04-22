@@ -26,6 +26,7 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     # gait type is a list of tuples (len 6) specifying instructions
     for inst in gait_type:
         MoveLegs(bus, inst)
+        print("Done with current instruction")
        
 def StopHoming(bus, curr_leg, joystick):
     """
