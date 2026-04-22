@@ -114,7 +114,7 @@ class I2CBus:
                 print(f"Failed to poll device {hex(device.address)}: {e}")
                 # break
             
-            time.sleep(0.6)
+            time.sleep(0.01)
     
         return finished_devices
     
