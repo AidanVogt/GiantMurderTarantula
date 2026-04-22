@@ -35,7 +35,7 @@ class Instruction:
                 break
             
             self.bus.devices[legs[num]].sendData(inst)
-            time.sleep(0.6)
+            time.sleep(0.05)
             
             num += 1
             
