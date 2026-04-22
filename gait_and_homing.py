@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import GAIT_SEND_TO_HOME, gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_SWIM_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import GAIT_SEND_TO_HOME, gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_SWIM_FORWARD, GAIT_SWIM_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 from gaits import GAIT_SWIM_TURN_RIGHT, GAIT_SWIM_TURN_LEFT
 import time
 
@@ -97,7 +97,7 @@ def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, send_to_home
         
     elif y == -1:
         print("Back")
-        CompleteOneMovementCycle(gaits[GAIT_BACKWARD], bus)
+        CompleteOneMovementCycle(gaits[GAIT_SWIM_BACKWARD], bus)
      
 
 def HomeMotors(bus, joystick):
