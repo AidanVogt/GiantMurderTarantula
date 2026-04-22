@@ -33,37 +33,11 @@ GAIT_RAISE_ALL = 7
 GAIT_LOWER_ALL = 8
 GAIT_SWIM_TURN_RIGHT = 9
 GAIT_SWIM_TURN_LEFT = 10
-GAIT_SEND_HOME = 11
+GAIT_SEND_TO_HOME = 11
+GAIT_SET_HOME = 12
 
 gaits = {
-    # GAIT_FORWARD: [
-    #     #### GROUP 1 LEGS 1, 3, 5 ####
-    #     # up
-    #     (ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE),
-        
-    #     # swing phase - leg in air, grounded legs move back
-    #     (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
-        
-    #     # down
-    #     (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
-        
-    #     # return to neutral stance phace
-    #     (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
-        
-    #     #### GROUP 2 LEGS 2, 4, 6 ####
-    #     # up
-    #     (ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
-        
-    #     # swing phase
-    #     (ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
-        
-    #     # down
-    #     (ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN),
-        
-    #     # return to neutral stance phase
-    #     (ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
-    # ],
-    
+
     GAIT_FORWARD: [
         #### GROUP 1 LEGS 1, 3, 5 ####
         # up
@@ -87,7 +61,6 @@ gaits = {
     ],
     
     # reverse of fwd
-    
     GAIT_BACKWARD: [
         #### GROUP 1 LEGS 1, 3, 5 ####
         # up
@@ -181,7 +154,11 @@ gaits = {
         (ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN),
     ],
     
-    GAIT_SEND_HOME:[
+    GAIT_SEND_TO_HOME:[
         (ACTION_SEND_HOME, ACTION_SEND_HOME, ACTION_SEND_HOME, ACTION_SEND_HOME, ACTION_SEND_HOME, ACTION_SEND_HOME)
+    ],
+    
+    GAIT_SET_HOME: [
+        ACTION_ZERO, ACTION_ZERO, ACTION_ZERO, ACTION_ZERO, ACTION_ZERO, ACTION_ZERO
     ]
 }

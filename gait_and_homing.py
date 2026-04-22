@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import GAIT_SEND_HOME, gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import GAIT_SEND_TO_HOME, GAIT_SET_HOME, gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 from gaits import GAIT_SWIM_TURN_RIGHT, GAIT_SWIM_TURN_LEFT
 import time
 
@@ -41,14 +41,17 @@ def StopHoming(bus, curr_leg, joystick):
         print("B button pressed, stopping")
         bus.devices[curr_leg].sendData(ACTION_DOWN)
         
-        done_moving = False
+        # send set home command to all legs in the bus
+        zero_all = gaits[GAIT_SET_HOME]
+        CompleteOneMovementCycle(zero_all, bus)
+        
                 
-        # wait until done
-        while not done_moving:
-            print("waiting for leg down")
-            done_moving = bus.pollSingleLeg(bus.devices[curr_leg])
+        # # wait until done
+        # while not done_moving:
+        #     print("waiting for leg down")
+        #     done_moving = bus.pollSingleLeg(bus.devices[curr_leg])
             
-        bus.devices[curr_leg].sendData(ACTION_ZERO)
+        # bus.devices[curr_leg].sendData(ACTION_ZERO)
         
         return True
 
@@ -75,7 +78,7 @@ def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, send_to_home
             
     elif send_to_home:
         print("Sending all motors back to home")
-        CompleteOneMovementCycle(gaits[GAIT_SEND_HOME], bus)
+        CompleteOneMovementCycle(gaits[GAIT_SEND_TO_HOME], bus)
 
     elif coolness:
         print("Wiggle/Coolness fct")
