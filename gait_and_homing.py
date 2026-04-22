@@ -28,7 +28,7 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     for inst in gait_type:
         MoveLegs(bus, inst)
         print("Done with current instruction")
-        time.sleep(1.5)
+        time.sleep(2)
        
 def StopHoming(bus, curr_leg, joystick):
     """
