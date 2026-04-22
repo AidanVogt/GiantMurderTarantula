@@ -73,9 +73,6 @@ gaits = {
         # down
         (ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN, ACTION_NONE),
         
-        # return to neutral stance phace
-        (ACTION_BACKWARD, ACTION_NONE, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD),
-        
         #### GROUP 2 LEGS 2, 4, 6 ####
         # up
         (ACTION_NONE, ACTION_NONE, ACTION_NONE, ACTION_UP, ACTION_NONE, ACTION_UP),
@@ -85,9 +82,6 @@ gaits = {
         
         # down
         (ACTION_NONE, ACTION_NONE, ACTION_NONE, ACTION_DOWN, ACTION_NONE, ACTION_DOWN),
-        
-        # return to neutral stance phase
-        (ACTION_FORWARD, ACTION_NONE, ACTION_FORWARD, ACTION_BACKWARD, ACTION_FORWARD, ACTION_BACKWARD),
     ],
     
     # reverse of fwd
