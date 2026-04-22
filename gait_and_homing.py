@@ -40,18 +40,15 @@ def StopHoming(bus, curr_leg, joystick):
     if b_btn:
         print("B button pressed, stopping")
         bus.devices[curr_leg].sendData(ACTION_DOWN)
-        
-        # send set home command to all legs in the bus
-        zero_all = gaits[GAIT_SET_HOME]
-        CompleteOneMovementCycle(zero_all, bus)
-        
+    
+        done_moving = False
                 
-        # # wait until done
-        # while not done_moving:
-        #     print("waiting for leg down")
-        #     done_moving = bus.pollSingleLeg(bus.devices[curr_leg])
+        # wait until done
+        while not done_moving:
+            print("waiting for leg down")
+            done_moving = bus.pollSingleLeg(bus.devices[curr_leg])
             
-        # bus.devices[curr_leg].sendData(ACTION_ZERO)
+        bus.devices[curr_leg].sendData(ACTION_ZERO)
         
         return True
 
