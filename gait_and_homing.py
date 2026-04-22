@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 from gaits import GAIT_SWIM_TURN_RIGHT, GAIT_SWIM_TURN_LEFT
 import time
 
@@ -28,7 +28,7 @@ def CompleteOneMovementCycle(gait_type, bus: I2CBus):
     for inst in gait_type:
         MoveLegs(bus, inst)
         print("Done with current instruction")
-        time.sleep(2)
+        time.sleep(3)
        
 def StopHoming(bus, curr_leg, joystick):
     """
