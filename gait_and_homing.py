@@ -1,6 +1,6 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_RAISE_TRIPOD, gaits, GAIT_FORWARD, GAIT_BACKWARD, GAIT_TURN_LEFT, GAIT_TURN_RIGHT, ACTION_NONE, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
-from gaits import GAIT_SWIM_TURN_RIGHT
+from gaits import gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import GAIT_SWIM_TURN_RIGHT, GAIT_SWIM_TURN_LEFT
 import time
 
 """
@@ -75,8 +75,7 @@ def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, bus: I2CBus)
 
     elif coolness:
         print("Wiggle/Coolness fct")
-        # CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
-        CompleteOneMovementCycle(gaits[GAIT_RAISE_TRIPOD], bus)
+        CompleteOneMovementCycle(gaits[GAIT_COOL], bus)
     
     # handle d-pad inputs
     elif x == 1:
@@ -85,16 +84,16 @@ def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, bus: I2CBus)
     
     elif x == -1:
         print("Turn Left")
-        # CompleteOneMovementCycle(gaits[GAIT_TURN_LEFT], bus)
+        CompleteOneMovementCycle(gaits[GAIT_SWIM_TURN_LEFT], bus)
 
     elif y==1:
         print("Forward")
-        CompleteOneMovementCycle(gaits[GAIT_FORWARD], bus)
+        # CompleteOneMovementCycle(gaits[GAIT_FORWARD], bus)
 
         
     elif y == -1:
         print("Back")
-        CompleteOneMovementCycle(gaits[GAIT_BACKWARD], bus)
+        # CompleteOneMovementCycle(gaits[GAIT_BACKWARD], bus)
      
 
 def HomeMotors(bus, joystick):
