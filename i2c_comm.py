@@ -55,7 +55,6 @@ class Instruction:
         print("Checking if done")
         
         num_finished = 0
-        finished_devices = self.bus.pollArduinos()
         
         while num_finished < len(self.bus.devices.keys()):
             finished_devices = self.bus.pollArduinos()
