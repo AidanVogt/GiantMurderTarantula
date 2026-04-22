@@ -62,7 +62,9 @@ class GMTJoystick:
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
             
-            return (x, y, a_btn, y_btn, b_btn, x_btn)
+            left_joystick_press = bool(self.j.get_button(8))
+            
+            return (x, y, a_btn, y_btn, b_btn, x_btn, left_joystick_press)
 
         except Exception as e:
             self.connected = False

@@ -1,5 +1,5 @@
 from i2c_comm import I2CBus, Instruction
-from gaits import gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
+from gaits import GAIT_SEND_HOME, gaits, ACTION_ZERO, GAIT_LOWER_ALL, GAIT_RAISE_ALL, GAIT_FORWARD, GAIT_BACKWARD, ACTION_HOME_FORWARD, ACTION_HOME_BACKWARD, GAIT_COOL, ACTION_UP, ACTION_DOWN
 from gaits import GAIT_SWIM_TURN_RIGHT, GAIT_SWIM_TURN_LEFT
 import time
 
@@ -35,7 +35,7 @@ def StopHoming(bus, curr_leg, joystick):
     Returns whether or not to stop homing the motors
     """
 
-    _, _, _, _, b_btn, x_btn = joystick.getControls()
+    _, _, _, _, b_btn, x_btn, left_joy = joystick.getControls()
     
     if b_btn:
         print("B button pressed, stopping")
@@ -55,7 +55,7 @@ def StopHoming(bus, curr_leg, joystick):
     else: 
         return False
 
-def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, bus: I2CBus):
+def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, send_to_home: bool, bus: I2CBus):
     
     # use the global variable for this
     global LIFT_LOWER
@@ -72,6 +72,10 @@ def JoystickToGait(x: int, y:int, coolness: bool, lift_lower: bool, bus: I2CBus)
         else:
             print("lowering")
             CompleteOneMovementCycle(gaits[GAIT_LOWER_ALL], bus)
+            
+    elif send_to_home:
+        print("Sending all motors back to home")
+        CompleteOneMovementCycle(gaits[GAIT_SEND_HOME], bus)
 
     elif coolness:
         print("Wiggle/Coolness fct")
@@ -133,7 +137,7 @@ def HomeMotors(bus, joystick):
             if stop:
                 return
             
-            x, y, a_btn, y_btn, b_btn, x_btn = joystick.getControls()
+            x, y, a_btn, y_btn, b_btn, x_btn, left_joy = joystick.getControls()
             
             print("y_btn value: ", y_btn)
             print(x, y)

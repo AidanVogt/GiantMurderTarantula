@@ -113,6 +113,8 @@ class I2CBus:
             except OSError as e:
                 print(f"Failed to poll device {hex(device.address)}: {e}")
                 # break
+            
+            time.sleep(0.6)
     
         return finished_devices
     
