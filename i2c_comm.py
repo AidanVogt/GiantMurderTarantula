@@ -1,5 +1,6 @@
 import smbus2
 from typing import Tuple
+import time
 
 """
 Classes for sending instructions between the Pi and Arduinos.
@@ -34,6 +35,7 @@ class Instruction:
                 break
             
             self.bus.devices[legs[num]].sendData(inst)
+            time.sleep(0.5)
             
             num += 1
             
