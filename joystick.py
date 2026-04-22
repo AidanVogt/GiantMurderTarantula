@@ -66,7 +66,7 @@ class GMTJoystick:
             x = dpad[0]   # -1 = left, 0 = neutral, 1 = right
             y = dpad[1]   # -1 = down, 0 = neutral, 1 = up
             
-            left_joystick_press = bool(self.j.get_button(8))
+            left_joystick_press = bool(self.j.get_button(9))
             
             return (x, y, a_btn, y_btn, b_btn, x_btn, left_joystick_press)
 
