@@ -53,8 +53,9 @@ class GMTJoystick:
         try:
             pygame.event.pump()
             
-            if pygame.event.type == pygame.JOYBUTTONDOWN:
-                print(f"Button pressed: {pygame.event.button}")
+            for event in pygame.event.get():
+                if event.type == pygame.JOYBUTTONDOWN:
+                    print(f"Button pressed: {event.button}")
 
             dpad = self.j.get_hat(0)
             a_btn = bool(self.j.get_button(0))
