@@ -9,6 +9,7 @@ Each movement "cycle" is divided into 10 steps, where the legs pass through the 
 # NOTE: Legs 0x13 (4), 0x14 (5), and 0x15 (6) movements need to be reversed (meaning forwards = backwards)
 
 # testing rotation gait, excluding leg 2 because it broke
+# canonical gait turn right works
 
 # ACTIONS (forward/backward mean hip movement, up/down mean knee movement)
 ACTION_NONE = 0
@@ -29,6 +30,7 @@ GAIT_RAISE_TRIPOD = 5
 GAIT_COOL = 6
 GAIT_RAISE_ALL = 7
 GAIT_LOWER_ALL = 8
+GAIT_SWIM_TURN_RIGHT = 9
 
 gaits = {
     GAIT_FORWARD: [
@@ -137,6 +139,14 @@ gaits = {
     
     (ACTION_NONE,    ACTION_NONE,     ACTION_NONE,    ACTION_DOWN,     ACTION_NONE,    ACTION_DOWN),
 
+    ],
+    
+    GAIT_SWIM_TURN_RIGHT: [
+        (ACTION_UP, ACTION_UP, ACTION_UP, ACTION_UP, ACTION_UP, ACTION_UP),
+        (ACTION_FORWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_FORWARD, ACTION_FORWARD),
+        (ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN, ACTION_DOWN),
+        (ACTION_BACKWARD, ACTION_BACKWARD, ACTION_BACKWARD, ACTION_BACKWARD, ACTION_BACKWARD),
+        
     ],
     
     GAIT_COOL: [
