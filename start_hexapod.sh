@@ -2,4 +2,4 @@
 
 source ~/.bashrc
 source ~/mech/bin/activate
-python -u /home/pi/GiantMurderTarantula/main.py
+python -u /home/pi/new/GiantMurderTarantula/main.py
